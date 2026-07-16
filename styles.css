@@ -1157,6 +1157,9 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   border: 1px solid var(--border-color);
   background: var(--bg-card);
 }
+.dashboard-form {
+  background: var(--bg-card-hover);
+}
 .dashboard-main h3, .dashboard-form h3 {
   font-size: 0.7rem;
   font-weight: 700;
@@ -1176,7 +1179,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--bg-card);
+  background: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-left: 3px solid transparent;
   transition: var(--transition);
@@ -1196,15 +1199,15 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   letter-spacing: 1px;
   text-transform: uppercase;
 }
-.confirmed { background: rgba(255, 0, 0, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
-.pending { background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); border: 1px solid var(--border-color); }
-.completed { background: rgba(255, 0, 0, 0.05); color: rgba(255,0,0,0.6); border: 1px solid rgba(255,0,0,0.2); }
+.confirmed { background: rgba(255, 0, 0, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+.pending { background: var(--bg-card-hover); color: var(--text-secondary); border: 1px solid var(--border-color); }
+.completed { background: rgba(255, 0, 0, 0.08); color: rgba(255,0,0,0.6); border: 1px solid rgba(255,0,0,0.2); }
 
 .dashboard-form form { display: flex; flex-direction: column; gap: 14px; }
 .dashboard-form input,
 .dashboard-form textarea {
   padding: 12px 16px;
-  background: var(--bg-card);
+  background: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   outline: none;
