@@ -78,9 +78,9 @@ const photographers = [
 function createCard(photographer) {
   return `
     <article class="card photographer-card" data-id="${photographer.id}">
-      <div class="card__img" style="background-image: url('${photographer.avatar}');"></div>
+      <div class="card__img" style="background-image: url('${photographer.portfolio[0]}');"></div>
       <a href="#" class="card_link">
-        <div class="card__img--hover" style="background-image: url('${photographer.avatar}');"></div>
+        <div class="card__img--hover" style="background-image: url('${photographer.portfolio[0]}');"></div>
       </a>
       <div class="card__info">
         <div class="card__info-header">
