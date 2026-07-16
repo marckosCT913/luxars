@@ -1097,10 +1097,19 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 }
 .stat-card {
   text-align: center;
-  padding: 24px 16px;
+  padding: 28px 16px;
   border: 1px solid var(--border-color);
   background: var(--bg-card);
-  border-top: 3px solid var(--accent-red);
+  position: relative;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent-red);
 }
 .stat-card i { font-size: 1.5rem; color: var(--accent-red); display: block; margin-bottom: 8px; }
 .stat-num { font-size: 2rem; font-weight: 900; display: block; letter-spacing: -1px; }
@@ -1141,12 +1150,14 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
+  border-left: 3px solid transparent;
   transition: var(--transition);
 }
 .reservation-item:hover {
-  border-color: var(--accent-red);
+  border-color: var(--border-color);
+  border-left-color: var(--accent-red);
 }
 .reservation-info { display: flex; align-items: center; gap: 12px; }
 .reservation-info img { width: 40px; height: 40px; object-fit: cover; }
@@ -1167,7 +1178,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .dashboard-form input,
 .dashboard-form textarea {
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   outline: none;
