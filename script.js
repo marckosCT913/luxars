@@ -104,8 +104,10 @@ const photographers = [
 
 // ----- Render helpers -----
 function createCard(photographer) {
+  const hasPromo = photographer.id === 2 || photographer.id === 4 || photographer.id === 5;
   return `
     <article class="card photographer-card" data-id="${photographer.id}">
+      ${hasPromo ? '<div class="promo-badge"></div>' : ''}
       <div class="card__img" style="background-image: url('${photographer.portfolio[0]}');"></div>
       <a href="#" class="card_link">
         <div class="card__img--hover" style="background-image: url('${photographer.portfolio[0]}');"></div>
