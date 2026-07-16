@@ -132,10 +132,30 @@ function createCard(photographer) {
   `;
 }
 
+// ----- Blob Button Initializer -----
+function initBlobButtons() {
+  document.querySelectorAll('.btn:not(.blob-initialized)').forEach(btn => {
+    btn.classList.add('blob-initialized');
+    const inner = btn.innerHTML;
+    btn.innerHTML = `
+      <span class="btn-text">${inner}</span>
+      <span class="blob-btn__inner">
+        <span class="blob-btn__blobs">
+          <span class="blob-btn__blob"></span>
+          <span class="blob-btn__blob"></span>
+          <span class="blob-btn__blob"></span>
+          <span class="blob-btn__blob"></span>
+        </span>
+      </span>
+    `;
+  });
+}
+
 function renderGrid(containerId, data) {
   const grid = document.getElementById(containerId);
   if (!grid) return;
   grid.innerHTML = data.map(createCard).join('');
+  initBlobButtons();
 }
 
 // ----- Navigation -----
@@ -273,10 +293,14 @@ document.addEventListener('click', e => {
   `;
 
   navigateTo('profile');
+  initBlobButtons();
 });
 
 // Back button
-document.getElementById('backToCatalog').addEventListener('click', () => navigateTo('catalog'));
+document.getElementById('backToCatalog').addEventListener('click', () => {
+  navigateTo('catalog');
+  initBlobButtons();
+});
 
 // ----- Auth tabs -----
 document.querySelectorAll('.auth-tab').forEach(tab => {
@@ -310,3 +334,4 @@ window.addEventListener('scroll', () => {
 // ----- Init -----
 renderGrid('featuredGrid', photographers.slice(0, 3));
 renderGrid('catalogGrid', photographers);
+initBlobButtons();
