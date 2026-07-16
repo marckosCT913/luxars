@@ -196,11 +196,11 @@ hamburger.addEventListener('click', () => {
 });
 
 // ----- Search tags -----
-document.querySelectorAll('.tag').forEach(tag => {
-  tag.addEventListener('click', () => {
-    document.getElementById('quickSearch').value = tag.dataset.filter;
+document.querySelectorAll('.tag-wrapper').forEach(wrapper => {
+  wrapper.addEventListener('click', () => {
+    document.getElementById('quickSearch').value = wrapper.dataset.filter;
     navigateTo('catalog');
-    document.getElementById('filterSpecialty').value = tag.dataset.filter;
+    document.getElementById('filterSpecialty').value = wrapper.dataset.filter;
     applyFilters();
   });
 });
@@ -332,6 +332,45 @@ document.getElementById('quoteForm').addEventListener('submit', e => {
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
 });
+
+// ----- Carousel auto-slide -----
+(function initCarousel() {
+  const track = document.querySelector('.carousel-track');
+  if (!track) return;
+  const slides = track.querySelectorAll('.carousel-slide');
+  const dotsContainer = document.querySelector('.carousel-dots');
+  let current = 0;
+  const total = slides.length;
+  let interval;
+
+  // Create dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('span');
+    if (i === 0) dot.classList.add('active');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = (index + total) % total;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+  }
+
+  function next() { goTo(current + 1); }
+
+  function startAuto() { interval = setInterval(next, 4000); }
+  function stopAuto() { clearInterval(interval); }
+
+  // Pause on hover
+  const carousel = document.querySelector('.carousel');
+  carousel.addEventListener('mouseenter', stopAuto);
+  carousel.addEventListener('mouseleave', startAuto);
+
+  startAuto();
+})();
 
 // ----- Init -----
 renderGrid('featuredGrid', photographers.slice(0, 3));

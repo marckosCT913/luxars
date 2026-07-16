@@ -76,13 +76,16 @@
             </div>
           </div>
           <div class="hero-visual">
-            <div class="photo-collage">
-              <div class="collage-grid">
-                <div class="collage-item ci-1" style="background-image:url('https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=400&fit=crop');"></div>
-                <div class="collage-item ci-2" style="background-image:url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=400&h=400&fit=crop');"></div>
-                <div class="collage-item ci-3" style="background-image:url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&h=400&fit=crop');"></div>
-                <div class="collage-item ci-4" style="background-image:url('https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=400&fit=crop');"></div>
+            <div class="carousel" id="heroCarousel">
+              <div class="carousel-track">
+                <div class="carousel-slide active" style="background-image:url('https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&h=500&fit=crop');"></div>
+                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=500&fit=crop');"></div>
+                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&h=500&fit=crop');"></div>
+                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=500&fit=crop');"></div>
+                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=600&h=500&fit=crop');"></div>
+                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=600&h=500&fit=crop');"></div>
               </div>
+              <div class="carousel-dots"></div>
             </div>
           </div>
         </div>
@@ -112,11 +115,51 @@
             </div>
             <div class="search-tags">
               <span>Popular:</span>
-              <button class="tag" data-filter="Retratos">Retratos</button>
-              <button class="tag" data-filter="Eventos">Eventos</button>
-              <button class="tag" data-filter="Moda">Moda</button>
-              <button class="tag" data-filter="Bodas">Bodas</button>
-              <button class="tag" data-filter="Producto">Producto</button>
+              <div class="tag-wrapper" data-filter="Retratos">
+                <div class="tag-image">
+                  <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=140&fit=crop" alt="Retratos" />
+                </div>
+                <div class="tag-header">
+                  <h4>Retratos</h4>
+                  <h4>Ver</h4>
+                </div>
+              </div>
+              <div class="tag-wrapper" data-filter="Eventos">
+                <div class="tag-image">
+                  <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200&h=140&fit=crop" alt="Eventos" />
+                </div>
+                <div class="tag-header">
+                  <h4>Eventos</h4>
+                  <h4>Ver</h4>
+                </div>
+              </div>
+              <div class="tag-wrapper" data-filter="Moda">
+                <div class="tag-image">
+                  <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=200&h=140&fit=crop" alt="Moda" />
+                </div>
+                <div class="tag-header">
+                  <h4>Moda</h4>
+                  <h4>Ver</h4>
+                </div>
+              </div>
+              <div class="tag-wrapper" data-filter="Bodas">
+                <div class="tag-image">
+                  <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=200&h=140&fit=crop" alt="Bodas" />
+                </div>
+                <div class="tag-header">
+                  <h4>Bodas</h4>
+                  <h4>Ver</h4>
+                </div>
+              </div>
+              <div class="tag-wrapper" data-filter="Producto">
+                <div class="tag-image">
+                  <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&h=140&fit=crop" alt="Producto" />
+                </div>
+                <div class="tag-header">
+                  <h4>Producto</h4>
+                  <h4>Ver</h4>
+                </div>
+              </div>
             </div>
           </div>
         </div>
