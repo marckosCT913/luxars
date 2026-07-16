@@ -33,27 +33,36 @@
   <!-- ========== NAVBAR ========== -->
   <nav class="navbar glass" id="navbar">
     <div class="container nav-container">
-      <a href="#" class="logo" data-page="home">
-        <i class="fas fa-camera"></i> Lux<span>Ars</span>
-      </a>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#" data-page="home" class="active link">
-          <span class="link--top">Inicio</span>
-          <span class="link--bottom">Inicio</span>
-        </a></li>
-        <li><a href="#" data-page="catalog" class="link">
-          <span class="link--top">Explorar</span>
-          <span class="link--bottom">Explorar</span>
-        </a></li>
-        <li><a href="#" data-page="dashboard" class="link">
-          <span class="link--top">Dashboard</span>
-          <span class="link--bottom">Dashboard</span>
-        </a></li>
-        <li><a href="#" data-page="auth" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
-      </ul>
-      <button class="hamburger" id="hamburger" aria-label="Menú">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="nav-row">
+        <a href="#" class="logo" data-page="home">
+          <i class="fas fa-camera"></i> Lux<span>Ars</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#" data-page="home" class="active link">
+            <span class="link--top">Inicio</span>
+            <span class="link--bottom">Inicio</span>
+          </a></li>
+          <li><a href="#" data-page="catalog" class="link">
+            <span class="link--top">Explorar</span>
+            <span class="link--bottom">Explorar</span>
+          </a></li>
+          <li><a href="#" data-page="dashboard" class="link">
+            <span class="link--top">Dashboard</span>
+            <span class="link--bottom">Dashboard</span>
+          </a></li>
+          <li><a href="#" data-page="auth" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="nav-search">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="quickSearch" placeholder="Busca por especialidad (retratos, eventos, moda...) o ubicación..." />
+          <button class="btn btn-primary" id="quickSearchBtn">Buscar</button>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -65,6 +74,19 @@
 
       <!-- Hero -->
       <header class="hero">
+        <div class="hero-visual">
+          <div class="carousel" id="heroCarousel">
+            <div class="carousel-track">
+              <div class="carousel-slide active" style="background-image:url('https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=1200&h=800&fit=crop');"></div>
+              <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1200&h=800&fit=crop');"></div>
+              <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1200&h=800&fit=crop');"></div>
+              <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&h=800&fit=crop');"></div>
+              <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1200&h=800&fit=crop');"></div>
+              <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=1200&h=800&fit=crop');"></div>
+            </div>
+            <div class="carousel-dots"></div>
+          </div>
+        </div>
         <div class="container hero-content">
           <div class="hero-text">
             <span class="badge">Marketplace Fotográfico</span>
@@ -73,26 +95,6 @@
             <div class="hero-cta">
               <a href="#" data-page="catalog" class="btn btn-primary"><i class="fas fa-search"></i> Explorar fotógrafos</a>
               <a href="#" data-page="auth" class="btn btn-outline"><i class="fas fa-user-plus"></i> Registrarme</a>
-            </div>
-            <div class="hero-search">
-              <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="quickSearch" placeholder="Busca por especialidad (retratos, eventos, moda...) o ubicación..." />
-                <button class="btn btn-primary" id="quickSearchBtn">Buscar</button>
-              </div>
-            </div>
-          </div>
-          <div class="hero-visual">
-            <div class="carousel" id="heroCarousel">
-              <div class="carousel-track">
-                <div class="carousel-slide active" style="background-image:url('https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&h=500&fit=crop');"></div>
-                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=500&fit=crop');"></div>
-                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&h=500&fit=crop');"></div>
-                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=500&fit=crop');"></div>
-                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=600&h=500&fit=crop');"></div>
-                <div class="carousel-slide" style="background-image:url('https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=600&h=500&fit=crop');"></div>
-              </div>
-              <div class="carousel-dots"></div>
             </div>
           </div>
         </div>
