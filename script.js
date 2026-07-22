@@ -396,13 +396,22 @@ function detectSQLInjection(str) {
 }
 
 function initBookingSystem() {
-  const sel = document.getElementById('bookPhotographer');
-  if (!sel) return;
+  const container = document.getElementById('photographerSelector');
+  if (!container) return;
+
+  // Render photographer mini-card grid
   photographers.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.id;
-    opt.textContent = `${p.name} — ${p.specialty} ($${p.price}.000/h)`;
-    sel.appendChild(opt);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'photo-option';
+    card.dataset.id = p.id;
+    card.innerHTML = `
+      <img src="${p.avatar}" alt="${p.name}" />
+      <strong>${p.name}</strong>
+      <span>${p.specialty}</span>
+    `;
+    card.addEventListener('click', () => selectPhotographer(p.id));
+    container.appendChild(card);
   });
 
   document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
@@ -411,6 +420,34 @@ function initBookingSystem() {
     document.getElementById('paymentStep').style.display = 'none';
     document.getElementById('bookingForm').style.display = 'block';
   });
+}
+
+function selectPhotographer(id) {
+  const prev = document.querySelector('.photo-option.selected');
+  if (prev) prev.classList.remove('selected');
+  const card = document.querySelector(`.photo-option[data-id="${id}"]`);
+  if (card) card.classList.add('selected');
+  document.getElementById('bookPhotographer').value = id;
+
+  const p = photographers.find(x => x.id === id);
+  if (!p) return;
+
+  const preview = document.getElementById('photographerPreview');
+  preview.style.display = 'flex';
+  const stars = '<i class="fas fa-star" style="color:#FF0000"></i>'.repeat(Math.floor(p.rating));
+  preview.innerHTML = `
+    <img src="${p.avatar}" alt="${p.name}" />
+    <div class="preview-info">
+      <h4>${p.name}</h4>
+      <div class="preview-meta">
+        <span><i class="fas fa-camera"></i> ${p.specialty}</span>
+        <span><i class="fas fa-map-marker-alt"></i> ${p.location}</span>
+        <span><i class="fas fa-briefcase"></i> ${p.experience}</span>
+        <span>${stars} ${p.rating}</span>
+      </div>
+      <p>${p.bio}</p>
+    </div>
+  `;
 }
 
 function handleBookingSubmit(e) {

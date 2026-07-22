@@ -429,18 +429,20 @@
             <form id="bookingForm">
               <div class="form-group">
                 <label>Fotógrafo</label>
-                <select id="bookPhotographer" required>
-                  <option value="">Selecciona un fotógrafo...</option>
-                </select>
+                <div class="photographer-selector" id="photographerSelector">
+                  <!-- rendered by JS -->
+                </div>
+                <div id="photographerPreview" class="photographer-preview" style="display:none;"></div>
+                <input type="hidden" id="bookPhotographer" required />
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label>Fecha</label>
-                  <input type="date" id="bookDate" required />
+                  <input type="date" id="bookDate" required readonly onfocus="this.showPicker();" />
                 </div>
                 <div class="form-group">
                   <label>Hora</label>
-                  <input type="time" id="bookTime" required />
+                  <input type="time" id="bookTime" required readonly onfocus="this.showPicker();" />
                 </div>
               </div>
               <div class="form-group">

@@ -1507,6 +1507,91 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   border-color: var(--accent-red);
 }
 .reservas-form-card .form-group select option { background: #1a1a1a; }
+
+/* Photographer selector grid */
+.photographer-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.photo-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+.photo-option:hover {
+  border-color: var(--accent-red);
+  background: rgba(255,0,0,0.03);
+}
+.photo-option.selected {
+  border-color: var(--accent-red);
+  background: rgba(255,0,0,0.06);
+}
+.photo-option img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+.photo-option strong {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+.photo-option span {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.photographer-preview {
+  padding: 16px;
+  border: 1px solid var(--accent-red);
+  background: rgba(255,0,0,0.03);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.photographer-preview img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.photographer-preview .preview-info h4 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+.photographer-preview .preview-info .preview-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.photographer-preview .preview-info .preview-meta i {
+  color: var(--accent-red);
+  margin-right: 3px;
+}
+.photographer-preview .preview-info p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2331,6 +2416,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .admin-stats { grid-template-columns: repeat(2, 1fr); }
   .reservas-layout { grid-template-columns: 1fr; }
   .payment-grid { grid-template-columns: 1fr; }
+  .photographer-selector { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
   .portfolio-grid { grid-template-columns: 1fr; }
