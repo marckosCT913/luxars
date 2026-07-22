@@ -536,9 +536,10 @@
           <p>Administra tus trabajos y proyectos</p>
         </div>
         <div class="portfolio-actions">
-          <button class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo proyecto</button>
-          <button class="btn btn-outline"><i class="fas fa-upload"></i> Subir imágenes</button>
+          <button class="btn btn-primary" id="btnNewProject"><i class="fas fa-plus"></i> Nuevo proyecto</button>
+          <button class="btn btn-outline" id="btnUploadImages"><i class="fas fa-upload"></i> Subir imágenes</button>
         </div>
+        <div id="uploaderStatus" class="uploader-status"></div>
         <div class="portfolio-grid" id="portfolioGrid">
           <div class="portfolio-item">
             <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=300&fit=crop" alt="" />
@@ -582,6 +583,101 @@
               <span>22 imágenes</span>
             </div>
           </div>
+          <!-- Uploaded items appear here -->
+          <div id="uploadedItems"></div>
+        </div>
+      </div>
+
+      <!-- Auth Overlay for Upload -->
+      <div id="uploadAuthOverlay" class="upload-auth-overlay" style="display:none;">
+        <div class="upload-auth-card">
+          <button class="upload-auth-close" id="uploadAuthClose"><i class="fas fa-times"></i></button>
+          <h3><i class="fas fa-lock"></i> Verificación requerida</h3>
+          <p>Debes iniciar sesión como administrador o fotógrafo para subir contenido.</p>
+          <form id="uploadAuthForm">
+            <div class="form-group">
+              <label>Correo electrónico</label>
+              <input type="email" id="uploadAuthEmail" placeholder="admin@luxars.com" required />
+            </div>
+            <div class="form-group">
+              <label>Contraseña</label>
+              <input type="password" id="uploadAuthPass" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn btn-primary full-width"><i class="fas fa-unlock"></i> Verificar</button>
+          </form>
+          <div id="uploadAuthError" class="upload-auth-error"></div>
+          <div class="upload-auth-hint">
+            <p><strong>Usuarios de prueba:</strong></p>
+            <p>Admin: admin@luxars.com / admin123</p>
+            <p>Fotógrafo: foto@luxars.com / foto123</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Modal -->
+      <div id="uploadModalOverlay" class="upload-modal-overlay" style="display:none;">
+        <div class="upload-modal-card">
+          <div class="upload-modal-header">
+            <div>
+              <h3><i class="fas fa-cloud-upload-alt"></i> Subir contenido</h3>
+              <p>Añade fotos o videos a tu portafolio</p>
+            </div>
+            <button class="upload-modal-close" id="uploadModalClose"><i class="fas fa-times"></i></button>
+          </div>
+
+          <div class="upload-modal-body">
+            <!-- Tipo -->
+            <div class="upload-field">
+              <label>Tipo de contenido</label>
+              <div class="upload-type-selector">
+                <button class="upload-type-btn active" data-type="imagen">
+                  <i class="fas fa-image"></i> Imagen <small>JPG, PNG, WEBP</small>
+                </button>
+                <button class="upload-type-btn" data-type="video">
+                  <i class="fas fa-video"></i> Video <small>MP4, MOV, AVI</small>
+                </button>
+              </div>
+            </div>
+
+            <!-- Drop zone -->
+            <div class="upload-field">
+              <label>Archivo</label>
+              <div class="upload-dropzone" id="uploadDropzone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Haz click para seleccionar o arrastra el archivo aquí</p>
+                <small>Máximo 50MB</small>
+                <div id="uploadFileName" class="upload-file-name"></div>
+                <input type="file" id="uploadFileInput" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" style="display:none;" />
+              </div>
+            </div>
+
+            <!-- Título -->
+            <div class="upload-field">
+              <label>Título</label>
+              <input type="text" id="uploadTitle" placeholder="Ej: Sesión de boda en la playa" />
+            </div>
+
+            <!-- Descripción -->
+            <div class="upload-field">
+              <label>Descripción <small>(opcional)</small></label>
+              <textarea id="uploadDesc" rows="3" placeholder="Describe tu trabajo, técnicas utilizadas, ubicación..."></textarea>
+            </div>
+
+            <!-- Etiquetas -->
+            <div class="upload-field">
+              <label>Etiquetas <small>(opcional)</small></label>
+              <input type="text" id="uploadTags" placeholder="Ej: boda, playa, atardecer (separadas por comas)" />
+            </div>
+
+            <!-- Preview -->
+            <div id="uploadPreview" class="upload-preview" style="display:none;"></div>
+          </div>
+
+          <div class="upload-modal-footer">
+            <button class="btn btn-outline" id="uploadModalCancel">Cancelar</button>
+            <button class="btn btn-primary" id="uploadSubmit"><i class="fas fa-upload"></i> Subir contenido</button>
+          </div>
+          <div id="uploadFeedback" class="upload-feedback"></div>
         </div>
       </div>
     </section>

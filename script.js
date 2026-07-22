@@ -648,8 +648,230 @@ function renderMyReservations() {
     });
   });
 }
+// ----- Upload System (Portafolio Module) -----
+const UPLOAD_USERS = [
+  { email: 'admin@luxars.com', pass: 'admin123', role: 'admin', name: 'Admin LuxArs' },
+  { email: 'foto@luxars.com', pass: 'foto123', role: 'photographer', name: 'Fotógrafo Test' }
+];
+let uploadSession = null;
+let selectedFile = null;
+
+function initUploadSystem() {
+  const btnUpload = document.getElementById('btnUploadImages');
+  if (!btnUpload) return;
+
+  // "Subir imágenes" → check auth
+  btnUpload.addEventListener('click', () => {
+    if (uploadSession) {
+      openUploadModal();
+    } else {
+      document.getElementById('uploadAuthOverlay').style.display = 'flex';
+    }
+  });
+
+  // "Nuevo proyecto" → same auth check
+  document.getElementById('btnNewProject').addEventListener('click', () => {
+    if (uploadSession) {
+      openUploadModal();
+    } else {
+      document.getElementById('uploadAuthOverlay').style.display = 'flex';
+    }
+  });
+
+  // Auth form submit
+  document.getElementById('uploadAuthForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = document.getElementById('uploadAuthEmail').value.trim();
+    const pass = document.getElementById('uploadAuthPass').value.trim();
+    const errorEl = document.getElementById('uploadAuthError');
+
+    const user = UPLOAD_USERS.find(u => u.email === email && u.pass === pass);
+    if (!user) {
+      errorEl.textContent = '❌ Credenciales incorrectas. Solo administradores y fotógrafos pueden subir contenido.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    uploadSession = user;
+    errorEl.style.display = 'none';
+    document.getElementById('uploadAuthOverlay').style.display = 'none';
+
+    const status = document.getElementById('uploaderStatus');
+    status.textContent = `✅ Sesión iniciada como ${user.name} (${user.role}).`;
+    status.className = 'uploader-status success';
+    status.style.display = 'block';
+    setTimeout(() => { status.style.display = 'none'; }, 4000);
+
+    openUploadModal();
+  });
+
+  // Close auth overlay
+  document.getElementById('uploadAuthClose').addEventListener('click', () => {
+    document.getElementById('uploadAuthOverlay').style.display = 'none';
+  });
+  document.getElementById('uploadAuthOverlay').addEventListener('click', function (e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  // Modal controls
+  document.getElementById('uploadModalClose').addEventListener('click', closeUploadModal);
+  document.getElementById('uploadModalCancel').addEventListener('click', closeUploadModal);
+  document.getElementById('uploadModalOverlay').addEventListener('click', function (e) {
+    if (e.target === this) closeUploadModal();
+  });
+
+  // Type selector
+  document.querySelectorAll('.upload-type-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.upload-type-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedFile = null;
+      document.getElementById('uploadFileName').style.display = 'none';
+      document.getElementById('uploadPreview').style.display = 'none';
+
+      const accept = this.dataset.type === 'imagen'
+        ? 'image/jpeg,image/png,image/webp'
+        : 'video/mp4,video/quicktime';
+      document.getElementById('uploadFileInput').accept = accept;
+    });
+  });
+
+  // Drop zone
+  const dropzone = document.getElementById('uploadDropzone');
+  const fileInput = document.getElementById('uploadFileInput');
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  dropzone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+  });
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  });
+
+  fileInput.addEventListener('change', function () {
+    if (this.files[0]) handleFileSelect(this.files[0]);
+  });
+
+  // Submit
+  document.getElementById('uploadSubmit').addEventListener('click', handleUploadSubmit);
+}
+
+function handleFileSelect(file) {
+  const maxBytes = 50 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    alert('El archivo supera el máximo de 50MB');
+    return;
+  }
+  selectedFile = file;
+  document.getElementById('uploadFileName').textContent = '📎 ' + file.name;
+  document.getElementById('uploadFileName').style.display = 'block';
+
+  // Preview
+  const preview = document.getElementById('uploadPreview');
+  const activeType = document.querySelector('.upload-type-btn.active');
+  if (activeType && activeType.dataset.type === 'imagen' && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<img src="${e.target.result}" alt="Preview" />`;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else if (activeType && activeType.dataset.type === 'video' && file.type.startsWith('video/')) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<video src="${e.target.result}" controls></video>`;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function openUploadModal() {
+  document.getElementById('uploadTitle').value = '';
+  document.getElementById('uploadDesc').value = '';
+  document.getElementById('uploadTags').value = '';
+  document.getElementById('uploadFileName').style.display = 'none';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadFeedback').style.display = 'none';
+  selectedFile = null;
+  document.getElementById('uploadModalOverlay').style.display = 'flex';
+}
+
+function closeUploadModal() {
+  document.getElementById('uploadModalOverlay').style.display = 'none';
+}
+
+function handleUploadSubmit() {
+  const feedback = document.getElementById('uploadFeedback');
+  feedback.style.display = 'none';
+
+  const title = document.getElementById('uploadTitle').value.trim();
+  const desc = document.getElementById('uploadDesc').value.trim();
+  const tagsStr = document.getElementById('uploadTags').value.trim();
+
+  if (!title) {
+    feedback.textContent = '⚠️ El título es obligatorio.';
+    feedback.className = 'upload-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  if (!selectedFile) {
+    feedback.textContent = '⚠️ Debes seleccionar un archivo.';
+    feedback.className = 'upload-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const type = document.querySelector('.upload-type-btn.active')?.dataset?.type || 'imagen';
+
+  // Simulate upload — add the uploaded item to the portfolio grid
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const container = document.getElementById('uploadedItems');
+    const imgUrl = type === 'imagen' ? e.target.result : 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop';
+    const item = document.createElement('div');
+    item.className = 'portfolio-item uploaded-item';
+    item.innerHTML = `
+      <img src="${imgUrl}" alt="${title}" />
+      <div class="portfolio-overlay">
+        <h4>${title}</h4>
+        <span>${desc ? desc.substring(0, 30) + (desc.length > 30 ? '...' : '') : 'Subido recientemente'}</span>
+      </div>
+    `;
+    container.appendChild(item);
+
+    feedback.textContent = '✅ Contenido subido exitosamente al portafolio.';
+    feedback.className = 'upload-feedback success';
+    feedback.style.display = 'block';
+
+    setTimeout(() => {
+      closeUploadModal();
+      feedback.style.display = 'none';
+    }, 1500);
+  };
+
+  if (type === 'imagen') {
+    reader.readAsDataURL(selectedFile);
+  } else {
+    // For video, use a placeholder image
+    reader.onload({ target: { result: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop' } });
+  }
+}
 renderGrid('featuredGrid', photographers.slice(0, 3));
 renderGrid('catalogGrid', photographers);
 renderGrid('fotografosGrid', photographers);
 initBlobButtons();
 initBookingSystem();
+initUploadSystem();
