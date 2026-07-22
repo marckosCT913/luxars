@@ -375,8 +375,281 @@ window.addEventListener('scroll', () => {
   startAuto();
 })();
 
-// ----- Init -----
+// ----- Booking System (Reservas Module) -----
+const occupiedSlots = [
+  { photographerId: 1, date: '2026-05-15', time: '14:00' },
+  { photographerId: 3, date: '2026-05-20', time: '10:00' },
+  { photographerId: 2, date: '2026-06-01', time: '16:00' }
+];
+let myReservations = [];
+let pendingBooking = null;
+let bookingIdCounter = 100;
+
+function sanitizeInput(str) {
+  if (!str) return '';
+  return String(str).replace(/[<>"';&\\]/g, '').trim();
+}
+
+function detectSQLInjection(str) {
+  const sqlPatterns = /('|--|;|\bDROP\b|\bDELETE\b|\bINSERT\b|\bUPDATE\b|\bUNION\b|\bSELECT\b|\bOR\b|\bAND\b|\bEXEC\b|\bxp_)/i;
+  return sqlPatterns.test(str);
+}
+
+function initBookingSystem() {
+  const sel = document.getElementById('bookPhotographer');
+  if (!sel) return;
+  photographers.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.name} — ${p.specialty} ($${p.price}.000/h)`;
+    sel.appendChild(opt);
+  });
+
+  document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
+  document.getElementById('btnConfirmPayment').addEventListener('click', handleConfirmPayment);
+  document.getElementById('btnCancelPayment').addEventListener('click', () => {
+    document.getElementById('paymentStep').style.display = 'none';
+    document.getElementById('bookingForm').style.display = 'block';
+  });
+}
+
+function handleBookingSubmit(e) {
+  e.preventDefault();
+  const feedback = document.getElementById('bookingFeedback');
+  feedback.className = 'booking-feedback';
+  feedback.style.display = 'none';
+
+  const photographerId = parseInt(document.getElementById('bookPhotographer').value);
+  const dateStr = document.getElementById('bookDate').value;
+  const timeStr = document.getElementById('bookTime').value;
+  const eventType = document.getElementById('bookEventType').value;
+  const location = document.getElementById('bookLocation').value;
+  const notes = document.getElementById('bookNotes').value;
+
+  // --- Validation ---
+
+  // Required fields
+  if (!photographerId || !dateStr || !timeStr || !eventType || !location) {
+    feedback.textContent = '⚠️ Todos los campos obligatorios deben completarse.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // Sanitize inputs
+  const sanitizedLocation = sanitizeInput(location);
+  const sanitizedNotes = sanitizeInput(notes);
+
+  // SQL Injection detection
+  if (detectSQLInjection(sanitizedLocation) || detectSQLInjection(sanitizedNotes) || detectSQLInjection(eventType)) {
+    feedback.textContent = '🚫 Datos inválidos detectados. Por favor ingresa información válida.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // Validate date/time format (no letters)
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const timeRegex = /^\d{2}:\d{2}$/;
+  if (!dateRegex.test(dateStr)) {
+    feedback.textContent = '⚠️ La fecha contiene caracteres inválidos. Usa el formato AAAA-MM-DD.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+  if (!timeRegex.test(timeStr)) {
+    feedback.textContent = '⚠️ La hora contiene caracteres inválidos. Usa el formato HH:MM.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // Year validation: must be current year
+  const currentYear = new Date().getFullYear();
+  const year = parseInt(dateStr.split('-')[0]);
+  if (year !== currentYear) {
+    feedback.textContent = `⚠️ Solo se permiten reservas en el año actual (${currentYear}). El año ingresado es ${year}.`;
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  const selectedDate = new Date(dateStr + 'T' + timeStr);
+  const now = new Date();
+
+  // Past date validation
+  if (selectedDate < now) {
+    feedback.textContent = '⚠️ No puedes reservar una fecha u hora anterior al momento actual.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // Same date+time as current moment
+  const diffMs = Math.abs(selectedDate - now);
+  if (diffMs < 60000) {
+    feedback.textContent = '⚠️ No puedes reservar para el mismo minuto en que realizas la reserva. Elige otro horario.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // CP001: Check availability (occupied slot)
+  const isOccupied = occupiedSlots.some(s =>
+    s.photographerId === photographerId && s.date === dateStr && s.time === timeStr
+  );
+  if (isOccupied) {
+    feedback.textContent = '⚠️ Este horario ya no se encuentra disponible. Por favor selecciona otra fecha u horario.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // CP001: Check against own reservations
+  const ownOccupied = myReservations.some(r =>
+    r.photographerId === photographerId && r.date === dateStr && r.time === timeStr && r.status !== 'Cancelada'
+  );
+  if (ownOccupied) {
+    feedback.textContent = '⚠️ Ya tienes una reserva activa en este horario con este fotógrafo.';
+    feedback.className = 'booking-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  // All validations passed → proceed to payment (CP003)
+  const photographer = photographers.find(p => p.id === photographerId);
+  pendingBooking = {
+    photographerId, photographerName: photographer.name,
+    photographerAvatar: photographer.avatar, photographerSpecialty: photographer.specialty,
+    date: dateStr, time: timeStr, eventType, location: sanitizedLocation,
+    notes: sanitizedNotes, price: photographer.price
+  };
+
+  showPaymentStep(pendingBooking);
+}
+
+function showPaymentStep(booking) {
+  document.getElementById('bookingForm').style.display = 'none';
+  document.getElementById('bookingFeedback').style.display = 'none';
+
+  const details = document.getElementById('paymentDetails');
+  details.innerHTML = `
+    <div class="payment-detail-item"><span>Fotógrafo</span><span><strong>${booking.photographerName}</strong></span></div>
+    <div class="payment-detail-item"><span>Servicio</span><span>${booking.eventType}</span></div>
+    <div class="payment-detail-item"><span>Fecha</span><span>${booking.date}</span></div>
+    <div class="payment-detail-item"><span>Hora</span><span>${booking.time}</span></div>
+    <div class="payment-detail-item"><span>Ubicación</span><span>${booking.location}</span></div>
+    <div class="payment-detail-item"><span>Notas</span><span>${booking.notes || '—'}</span></div>
+    <div class="payment-detail-item" style="border-bottom:none;font-weight:700;">
+      <span>Total</span><span style="color:var(--accent-red);font-size:1.1rem;">$${booking.price}.000 COP</span>
+    </div>
+  `;
+
+  document.getElementById('paymentStep').style.display = 'block';
+  document.getElementById('paymentStep').scrollIntoView({ behavior: 'smooth' });
+}
+
+function handleConfirmPayment() {
+  if (!pendingBooking) return;
+  const feedback = document.getElementById('bookingFeedback');
+
+  bookingIdCounter++;
+  const id = 'RES-' + bookingIdCounter;
+
+  const reservation = {
+    id,
+    ...pendingBooking,
+    status: 'Confirmada',
+    createdAt: new Date().toISOString()
+  };
+
+  myReservations.unshift(reservation);
+
+  // Block the slot
+  occupiedSlots.push({
+    photographerId: reservation.photographerId,
+    date: reservation.date,
+    time: reservation.time
+  });
+
+  document.getElementById('paymentStep').style.display = 'none';
+  document.getElementById('bookingForm').style.display = 'block';
+  document.getElementById('bookingForm').reset();
+
+  feedback.textContent = '✅ ¡Reserva confirmada con éxito! Revisa los detalles en "Mis reservas".';
+  feedback.className = 'booking-feedback success';
+  feedback.style.display = 'block';
+
+  renderMyReservations();
+  pendingBooking = null;
+
+  feedback.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderMyReservations() {
+  const container = document.getElementById('reservasListContainer');
+  const stats = document.getElementById('reservasStatsMini');
+
+  const active = myReservations.filter(r => r.status === 'Confirmada').length;
+  const pending = myReservations.filter(r => r.status === 'Pendiente').length;
+  const canceled = myReservations.filter(r => r.status === 'Cancelada').length;
+
+  stats.innerHTML = `
+    <span><strong>${active}</strong> Activas</span>
+    <span><strong>${pending}</strong> Pendientes</span>
+    <span><strong>${canceled}</strong> Canceladas</span>
+  `;
+
+  if (myReservations.length === 0) {
+    container.innerHTML = `
+      <div class="reservas-empty">
+        <i class="fas fa-calendar"></i>
+        <p>Aún no tienes reservas. Usa el formulario para agendar tu primera sesión.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = myReservations.map(r => {
+    const statusClass = r.status === 'Confirmada' ? 'confirmed' : r.status === 'Cancelada' ? 'pending' : 'pending';
+    return `
+      <div class="reservas-item" data-res-id="${r.id}">
+        <img src="${r.photographerAvatar}" alt="" />
+        <div class="reservas-item-info">
+          <strong>${r.photographerName}</strong>
+          <span>${r.eventType} · ${r.date} a las ${r.time} · ${r.location}</span>
+        </div>
+        <span class="status-badge ${statusClass}">${r.status}</span>
+        <div class="reservas-item-actions">
+          ${r.status !== 'Cancelada' ? `<button class="btn-cancel" data-res-id="${r.id}">Cancelar</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // CP002: Cancel handler
+  container.querySelectorAll('.btn-cancel').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const resId = this.dataset.resId;
+      const res = myReservations.find(r => r.id === resId);
+      if (!res) return;
+
+      if (!confirm('¿Estás seguro de cancelar esta reserva?')) return;
+
+      res.status = 'Cancelada';
+
+      // CP002: Free the slot in occupiedSlots
+      const idx = occupiedSlots.findIndex(s =>
+        s.photographerId === res.photographerId && s.date === res.date && s.time === res.time
+      );
+      if (idx !== -1) occupiedSlots.splice(idx, 1);
+
+      renderMyReservations();
+    });
+  });
+}
 renderGrid('featuredGrid', photographers.slice(0, 3));
 renderGrid('catalogGrid', photographers);
 renderGrid('fotografosGrid', photographers);
 initBlobButtons();
+initBookingSystem();

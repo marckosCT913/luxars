@@ -418,39 +418,109 @@
         <div class="section-header">
           <div class="hr-red"></div>
           <span class="badge">Reservas</span>
-          <h2>Mis reservas</h2>
-          <p>Gestiona todas tus sesiones fotográficas</p>
+          <h2>Agendar sesión fotográfica</h2>
+          <p>Selecciona fotógrafo, fecha y hora para tu sesión</p>
         </div>
-        <div class="reservas-stats">
-          <div class="stat-card"><i class="fas fa-calendar-check"></i><span class="stat-num">3</span><span>Activas</span></div>
-          <div class="stat-card"><i class="fas fa-check-circle"></i><span class="stat-num">12</span><span>Completadas</span></div>
-          <div class="stat-card"><i class="fas fa-clock"></i><span class="stat-num">1</span><span>Pendientes</span></div>
-          <div class="stat-card"><i class="fas fa-times-circle"></i><span class="stat-num">2</span><span>Canceladas</span></div>
+
+        <!-- Booking Form -->
+        <div class="reservas-layout">
+          <div class="reservas-form-card">
+            <h3><i class="fas fa-calendar-plus"></i> Nueva reserva</h3>
+            <form id="bookingForm">
+              <div class="form-group">
+                <label>Fotógrafo</label>
+                <select id="bookPhotographer" required>
+                  <option value="">Selecciona un fotógrafo...</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Fecha</label>
+                  <input type="date" id="bookDate" required />
+                </div>
+                <div class="form-group">
+                  <label>Hora</label>
+                  <input type="time" id="bookTime" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Tipo de evento</label>
+                <select id="bookEventType" required>
+                  <option value="">Selecciona...</option>
+                  <option>Bodas</option>
+                  <option>Retratos</option>
+                  <option>Eventos</option>
+                  <option>Moda</option>
+                  <option>Producto</option>
+                  <option>Arquitectura</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Ubicación</label>
+                <input type="text" id="bookLocation" placeholder="Ej: Jardín Botánico Medellín" required />
+              </div>
+              <div class="form-group">
+                <label>Notas adicionales</label>
+                <textarea id="bookNotes" rows="2" placeholder="Requerimientos especiales..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary full-width" id="btnBookNow">
+                <i class="fas fa-calendar-check"></i> Continuar al pago
+              </button>
+            </form>
+            <div id="bookingFeedback" class="booking-feedback"></div>
+          </div>
+
+          <!-- My Reservations -->
+          <div class="reservas-list-card">
+            <h3><i class="fas fa-list"></i> Mis reservas</h3>
+            <div class="reservas-stats-mini" id="reservasStatsMini">
+              <span><strong>0</strong> Activas</span>
+              <span><strong>0</strong> Pendientes</span>
+              <span><strong>0</strong> Canceladas</span>
+            </div>
+            <div id="reservasListContainer">
+              <div class="reservas-empty">
+                <i class="fas fa-calendar"></i>
+                <p>Aún no tienes reservas. Usa el formulario para agendar tu primera sesión.</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="reservas-table">
-          <div class="reservas-table-header">
-            <span>Fotógrafo</span><span>Servicio</span><span>Fecha</span><span>Estado</span><span>Total</span>
+
+        <!-- Payment Step (hidden until booking confirmed) -->
+        <div id="paymentStep" class="payment-step" style="display:none;">
+          <div class="section-header">
+            <div class="hr-red"></div>
+            <span class="badge">Pago</span>
+            <h2>Resumen y pago</h2>
+            <p>Confirma los detalles de tu reserva</p>
           </div>
-          <div class="reservas-row">
-            <div class="reservas-cell"><img src="https://i.pravatar.cc/40?img=11" alt="" /><strong>Carlos Pérez</strong></div>
-            <div class="reservas-cell">Bodas</div>
-            <div class="reservas-cell">12 Sep 2026</div>
-            <div class="reservas-cell"><span class="status-badge confirmed">Confirmada</span></div>
-            <div class="reservas-cell">$450.000</div>
-          </div>
-          <div class="reservas-row">
-            <div class="reservas-cell"><img src="https://i.pravatar.cc/40?img=5" alt="" /><strong>Ana Martínez</strong></div>
-            <div class="reservas-cell">Retratos</div>
-            <div class="reservas-cell">28 Ago 2026</div>
-            <div class="reservas-cell"><span class="status-badge pending">Pendiente</span></div>
-            <div class="reservas-cell">$180.000</div>
-          </div>
-          <div class="reservas-row">
-            <div class="reservas-cell"><img src="https://i.pravatar.cc/40?img=9" alt="" /><strong>Luis Gómez</strong></div>
-            <div class="reservas-cell">Eventos</div>
-            <div class="reservas-cell">15 Jul 2026</div>
-            <div class="reservas-cell"><span class="status-badge completed">Finalizada</span></div>
-            <div class="reservas-cell">$250.000</div>
+          <div class="payment-grid">
+            <div class="payment-summary glass-card">
+              <h3><i class="fas fa-file-invoice"></i> Detalles de la reserva</h3>
+              <div id="paymentDetails"></div>
+              <button class="btn btn-primary full-width" id="btnConfirmPayment">
+                <i class="fas fa-check-circle"></i> Confirmar y pagar
+              </button>
+              <button class="btn btn-outline full-width" id="btnCancelPayment" style="margin-top:8px;">
+                <i class="fas fa-arrow-left"></i> Volver
+              </button>
+            </div>
+            <div class="payment-methods glass-card">
+              <h3><i class="fas fa-credit-card"></i> Método de pago</h3>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" checked />
+                <span><i class="fab fa-cc-visa"></i> •••• 4532</span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" />
+                <span><i class="fab fa-cc-mastercard"></i> •••• 8910</span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" />
+                <span><i class="fas fa-money-bill-wave"></i> Efectivo</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
