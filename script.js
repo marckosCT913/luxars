@@ -833,12 +833,70 @@ function renderMyReservations() {
     });
   });
 }
-// ----- Upload System (Portafolio Module) -----
-const UPLOAD_USERS = [
-  { email: 'admin@luxars.com', pass: 'admin123', role: 'admin', name: 'Admin LuxArs' },
-  { email: 'foto@luxars.com', pass: 'foto123', role: 'photographer', name: 'Fotógrafo Test' }
+// ----- Session System -----
+const APP_USERS = [
+  { email: 'admin@luxars.com', pass: 'admin123', role: 'admin', name: 'Admin LuxArs', avatar: 'https://i.pravatar.cc/100?img=68' },
+  { email: 'foto@luxars.com', pass: 'foto123', role: 'photographer', name: 'Fotógrafo Test', avatar: 'https://i.pravatar.cc/100?img=55' }
 ];
-let uploadSession = null;
+let currentUser = null;
+
+function saveSession(user) {
+  currentUser = user;
+  localStorage.setItem('luxars_session', JSON.stringify(user));
+  updateNavbarUI();
+}
+
+function restoreSession() {
+  const raw = localStorage.getItem('luxars_session');
+  if (raw) {
+    try {
+      const user = JSON.parse(raw);
+      const valid = APP_USERS.find(u => u.email === user.email);
+      if (valid) {
+        currentUser = valid;
+        updateNavbarUI();
+        // Also update upload status if on portafolio
+        const status = document.getElementById('uploaderStatus');
+        if (status) {
+          status.textContent = `✅ Sesión iniciada como ${valid.name} (${valid.role}).`;
+          status.className = 'uploader-status success';
+          status.style.display = 'block';
+          setTimeout(() => { status.style.display = 'none'; }, 4000);
+        }
+      } else {
+        localStorage.removeItem('luxars_session');
+      }
+    } catch { localStorage.removeItem('luxars_session'); }
+  }
+}
+
+function logoutSession() {
+  currentUser = null;
+  localStorage.removeItem('luxars_session');
+  updateNavbarUI();
+  // Hide uploader status
+  const status = document.getElementById('uploaderStatus');
+  if (status) status.style.display = 'none';
+}
+
+function updateNavbarUI() {
+  const badge = document.getElementById('userBadge');
+  const loginBtn = document.getElementById('loginBtn');
+  if (!badge || !loginBtn) return;
+
+  if (currentUser) {
+    badge.style.display = 'block';
+    loginBtn.style.display = 'none';
+    document.getElementById('userAvatar').src = currentUser.avatar;
+    document.getElementById('userName').textContent = currentUser.name;
+  } else {
+    badge.style.display = 'none';
+    loginBtn.style.display = 'inline-flex';
+  }
+}
+
+// ----- Upload System (Portafolio Module) -----
+const UPLOAD_USERS = APP_USERS;
 let selectedFile = null;
 
 function initUploadSystem() {
@@ -847,7 +905,7 @@ function initUploadSystem() {
 
   // "Subir imágenes" → check auth
   btnUpload.addEventListener('click', () => {
-    if (uploadSession) {
+    if (currentUser) {
       openUploadModal();
     } else {
       document.getElementById('uploadAuthOverlay').style.display = 'flex';
@@ -856,7 +914,7 @@ function initUploadSystem() {
 
   // "Nuevo proyecto" → same auth check
   document.getElementById('btnNewProject').addEventListener('click', () => {
-    if (uploadSession) {
+    if (currentUser) {
       openUploadModal();
     } else {
       document.getElementById('uploadAuthOverlay').style.display = 'flex';
@@ -872,12 +930,12 @@ function initUploadSystem() {
 
     const user = UPLOAD_USERS.find(u => u.email === email && u.pass === pass);
     if (!user) {
-      errorEl.textContent = '❌ Credenciales incorrectas. Solo administradores y fotógrafos pueden subir contenido.';
+      errorEl.textContent = 'Credenciales incorrectas. Solo administradores y fotógrafos pueden subir contenido.';
       errorEl.style.display = 'block';
       return;
     }
 
-    uploadSession = user;
+    saveSession(user);
     errorEl.style.display = 'none';
     document.getElementById('uploadAuthOverlay').style.display = 'none';
 
@@ -1061,3 +1119,44 @@ initBlobButtons();
 initBookingSystem();
 initCustomPickers();
 initUploadSystem();
+
+// ----- Session UI Events -----
+restoreSession();
+
+document.getElementById('userBadgeBtn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  document.getElementById('userDropdown').classList.toggle('open');
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function (e) {
+  e.preventDefault();
+  document.getElementById('userDropdown').classList.remove('open');
+  logoutSession();
+  // Navigate to home
+  document.querySelector('[data-page="home"]')?.click();
+});
+
+document.addEventListener('click', function () {
+  document.getElementById('userDropdown')?.classList.remove('open');
+});
+
+// Main auth page login
+document.querySelector('#page-auth #auth-login form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const email = this.querySelector('input[type="email"]').value.trim();
+  const pass = this.querySelector('input[type="password"]').value.trim();
+  const user = APP_USERS.find(u => u.email === email && u.pass === pass);
+  if (user) {
+    saveSession(user);
+    const status = document.getElementById('uploaderStatus');
+    if (status) {
+      status.textContent = '✅ Sesión iniciada como ' + user.name + ' (' + user.role + ').';
+      status.className = 'uploader-status success';
+      status.style.display = 'block';
+      setTimeout(() => { status.style.display = 'none'; }, 4000);
+    }
+    document.querySelector('[data-page="home"]')?.click();
+  } else {
+    alert('Credenciales incorrectas. Prueba con admin@luxars.com / admin123');
+  }
+});
