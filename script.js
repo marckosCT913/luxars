@@ -183,29 +183,24 @@ function hasAccess(page) {
   return true;
 }
 
-function showToast(msg) {
-  let toast = document.getElementById('authToast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'authToast';
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#1E1E1E;border:1px solid #FF0000;padding:14px 24px;display:flex;align-items:center;gap:12px;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;color:#fff;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.5);opacity:0;transition:opacity 0.3s ease;pointer-events:none;';
-    document.body.appendChild(toast);
+function showAccessModal(msg) {
+  const modal = document.getElementById('accessModal');
+  const msgEl = document.getElementById('accessModalMsg');
+  if (modal && msgEl) {
+    msgEl.textContent = msg;
+    modal.style.display = 'flex';
   }
-  toast.textContent = '';
-  const icon = document.createElement('i');
-  icon.className = 'fas fa-exclamation-triangle';
-  icon.style.color = '#FF0000';
-  toast.appendChild(icon);
-  toast.appendChild(document.createTextNode(' ' + msg));
-  toast.style.opacity = '1';
-  clearTimeout(toast._hide);
-  toast._hide = setTimeout(() => { toast.style.opacity = '0'; }, 5000);
+}
+
+function closeAccessModal() {
+  const modal = document.getElementById('accessModal');
+  if (modal) modal.style.display = 'none';
 }
 
 function navigateTo(pageId) {
   if (pageId !== 'auth' && !hasAccess(pageId)) {
     const rule = ACCESS_RULES[pageId];
-    showToast(rule ? rule.msg : 'Acceso denegado.');
+    showAccessModal(rule ? rule.msg : 'Acceso denegado.');
     return;
   }
   pages.forEach(p => p.classList.remove('active'));
@@ -241,6 +236,11 @@ hamburger.addEventListener('click', () => {
 navPanelClose.addEventListener('click', () => {
   hamburger.classList.remove('active');
   navPanel.classList.remove('open');
+});
+
+document.getElementById('accessModalClose').addEventListener('click', closeAccessModal);
+document.getElementById('accessModal').addEventListener('click', function (e) {
+  if (e.target === this || e.target.classList.contains('access-modal-backdrop')) closeAccessModal();
 });
 
 // Close panel on Escape
@@ -1214,7 +1214,6 @@ function handleUploadSubmit() {
 }
 renderGrid('featuredGrid', photographers.slice(0, 3));
 renderGrid('catalogGrid', photographers);
-renderGrid('fotografosGrid', photographers);
 initBlobButtons();
 initBookingSystem();
 initCustomPickers();

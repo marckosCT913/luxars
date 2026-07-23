@@ -72,7 +72,6 @@
         <li><a href="#" data-page="catalog" class="link">Explorar</a></li>
         <li><a href="#" data-page="reservas" class="link">Reservas</a></li>
         <li><a href="#" data-page="portafolio" class="link">Portafolio</a></li>
-        <li><a href="#" data-page="fotografos" class="link">Fotógrafos</a></li>
         <li><a href="#" data-page="soporte" class="link">Soporte</a></li>
         <li><a href="#" data-page="chat" class="link">Chat</a></li>
       </ul>
@@ -795,41 +794,6 @@
       </div>
     </section>
 
-    <!-- ===== FOTÓGRAFOS ===== -->
-    <section class="page" id="page-fotografos">
-      <div class="container">
-        <div class="section-header">
-          <div class="hr-red"></div>
-          <span class="badge">Fotógrafos</span>
-          <h2>Directorio de fotógrafos</h2>
-          <p>Explora y gestiona los profesionales de la plataforma</p>
-        </div>
-        <div class="fotografos-toolbar">
-          <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Buscar fotógrafo por nombre o especialidad..." />
-          </div>
-          <select class="fotografos-filter">
-            <option value="">Todos</option>
-            <option>Retratos</option>
-            <option>Eventos</option>
-            <option>Moda</option>
-            <option>Bodas</option>
-            <option>Producto</option>
-            <option>Arquitectura</option>
-          </select>
-          <select class="fotografos-filter">
-            <option value="">Ciudad</option>
-            <option>Medellín</option>
-            <option>Envigado</option>
-            <option>Sabaneta</option>
-            <option>Bello</option>
-          </select>
-        </div>
-        <div class="photographer-grid" id="fotografosGrid"></div>
-      </div>
-    </section>
-
     <!-- ===== MÉTODO PAGO ===== -->
     <section class="page" id="page-pago">
       <div class="container">
@@ -1144,6 +1108,16 @@
   </footer>
 
   <script src="script.js"></script>
+
+  <!-- Access denied modal -->
+  <div class="access-modal-wrap" id="accessModal">
+    <div class="access-modal-backdrop"></div>
+    <div class="access-modal">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p id="accessModalMsg"></p>
+      <button class="btn btn-primary" id="accessModalClose">Entendido</button>
+    </div>
+  </div>
 
   <!-- SVG Goo Filter for Blob Buttons -->
   <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">

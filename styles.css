@@ -437,13 +437,13 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   border-left-color: var(--accent-red);
 }
 .nav-panel .nav-links .link.locked {
-  opacity: 0.45;
+  color: #555;
   cursor: not-allowed;
   border-left-color: transparent;
+  opacity: 1;
 }
 .nav-panel .nav-links .link.locked:hover {
-  opacity: 0.45;
-  color: var(--text-primary);
+  color: #555;
   background: none;
   border-left-color: transparent;
 }
@@ -452,9 +452,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   margin-left: auto;
-  font-size: 0.7rem;
-  color: var(--accent-red);
-  opacity: 0.7;
+  font-size: 0.65rem;
+  color: #555;
 }
 .nav-panel .nav-links .link--top,
 .nav-panel .nav-links .link--bottom,
@@ -1451,6 +1450,49 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .auth-alt { text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--text-secondary); }
 .auth-alt a { color: var(--accent-red); font-weight: 700; }
 .auth-alt a:hover { text-decoration: underline; }
+
+/* ----- Access Denied Modal ----- */
+.access-modal-wrap {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.access-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+.access-modal {
+  position: relative;
+  background: #1E1E1E;
+  border: 2px solid var(--accent-red);
+  padding: 56px 48px;
+  text-align: center;
+  max-width: 480px;
+  width: 90vw;
+  z-index: 1;
+}
+.access-modal i {
+  font-size: 3.5rem;
+  color: var(--accent-red);
+  margin-bottom: 20px;
+  display: block;
+}
+.access-modal p {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0 0 28px;
+  font-weight: 500;
+}
+.access-modal .btn {
+  min-width: 180px;
+  padding: 14px 32px !important;
+  font-size: 0.8rem !important;
+}
 
 /* ============================================================
    FOOTER
