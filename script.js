@@ -200,11 +200,12 @@ hamburger.addEventListener('click', () => {
 
 // ----- Search tags -----
 document.querySelectorAll('.category-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.getElementById('quickSearch').value = card.dataset.filter;
+  card.addEventListener('click', function (e) {
+    if (e.target.closest('.cat-block-link')) return;
+    document.getElementById('quickSearch').value = this.dataset.filter;
     navigateTo('catalog');
     const filter = document.getElementById('filterSpecialty');
-    if (filter) { filter.value = card.dataset.filter; applyFilters(); }
+    if (filter) { filter.value = this.dataset.filter; applyFilters(); }
   });
 });
 
