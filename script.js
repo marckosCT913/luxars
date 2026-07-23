@@ -199,12 +199,12 @@ hamburger.addEventListener('click', () => {
 });
 
 // ----- Search tags -----
-document.querySelectorAll('.tag-wrapper').forEach(wrapper => {
-  wrapper.addEventListener('click', () => {
-    document.getElementById('quickSearch').value = wrapper.dataset.filter;
+document.querySelectorAll('.category-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.getElementById('quickSearch').value = card.dataset.filter;
     navigateTo('catalog');
-    document.getElementById('filterSpecialty').value = wrapper.dataset.filter;
-    applyFilters();
+    const filter = document.getElementById('filterSpecialty');
+    if (filter) { filter.value = card.dataset.filter; applyFilters(); }
   });
 });
 
