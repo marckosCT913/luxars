@@ -1495,6 +1495,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .btn-login i { font-size: 1rem; }
   .hero-text h1 { font-size: 2rem; }
   .hero-content { padding: 80px 0 40px; }
+  .hero-cta { justify-content: center; }
   .steps-grid { grid-template-columns: 1fr; }
   .photographer-grid { grid-template-columns: 1fr; }
   .card:hover { transform: scale(1.03, 1.03); }
@@ -1514,7 +1515,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 
 @media (max-width: 480px) {
   .hero-text h1 { font-size: 1.5rem; }
-  .hero-text { backdrop-filter: none; padding: 24px; }
+  .hero-text { padding: 24px; }
   .hero-text p { font-size: 0.85rem; }
   .section { padding: 40px 0; }
   .container { padding: 0 16px; }
@@ -1541,9 +1542,6 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 @media (hover: none) and (pointer: coarse) {
   /* Background orbs — heavy on mobile GPU */
   .bg-orbs { display: none; }
-  .hero-text { backdrop-filter: none; }
-  .step-card .step-icon::before,
-  .step-card .step-icon::after { display: none; }
 
   /* Nav link hover → active on tap */
   .nav-links .link:active .link--top,
