@@ -102,6 +102,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+  overflow-x: hidden;
 }
 
 /* ----- Swiss Horizontal Rule (structural divider) ----- */
@@ -640,16 +641,17 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 }
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(5, 200px);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
-  justify-content: center;
 }
 
 /* Tag wrapper — image hover card (standalone) */
 .tag-wrapper {
   position: relative;
-  width: 200px;
-  height: 260px;
+  width: 100%;
+  aspect-ratio: 200 / 260;
+  max-width: 200px;
+  margin: 0 auto;
   overflow: hidden;
   border: 1px solid var(--border-color);
   cursor: pointer;
@@ -669,8 +671,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   background: rgba(0,0,0,0.15);
 }
 .tag-image {
-  width: 200px;
-  height: 260px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   transition: transform 600ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
@@ -694,7 +696,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   z-index: 3;
 }
 .tag-header h4 {
-  height: 260px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -726,10 +728,10 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   transform: scale(1.3);
 }
 .tag-wrapper:hover .tag-header h4:first-child {
-  transform: translateY(-260px);
+  transform: translateY(-100%);
 }
 .tag-wrapper:hover .tag-header h4:last-child {
-  transform: translateY(-260px);
+  transform: translateY(-100%);
 }
 
 /* ============================================================
@@ -1415,7 +1417,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 /* ============================================================
    PAGE TRANSITIONS
    ============================================================ */
-.page { display: none; animation: fadePage 0.4s ease; }
+.page { display: none; animation: fadePage 0.4s ease; overflow-x: hidden; }
 .page.active { display: block; }
 @keyframes fadePage {
   from { opacity: 0; transform: translateY(16px); }
@@ -1485,15 +1487,11 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .footer-content { flex-direction: column; gap: 16px; text-align: center; }
   .nav-search .search-bar { flex-direction: row; }
   .categories-grid { gap: 12px; }
-  .tag-wrapper { width: 140px; height: 180px; }
-  .tag-image { width: 140px; height: 180px; }
-  .tag-image img { object-position: center 30%; }
-  .tag-header h4 { height: 180px; font-size: 0.9rem; }
+  .tag-wrapper { max-width: 140px; }
+  .tag-header h4 { font-size: 0.9rem; }
   .tag-wrapper:hover .tag-image { transform: scale(1.2); }
   .tag-wrapper:hover .tag-image img { transform: scale(1.25); }
-  .tag-wrapper:hover .tag-header h4:first-child { transform: translateY(-180px); }
-  .tag-wrapper:hover .tag-header h4:last-child { transform: translateY(-180px); }
-  .categories-grid { grid-template-columns: repeat(3, 140px); }
+  .categories-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 480px) {
@@ -1505,20 +1503,17 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .step-card { padding: 24px; }
   .role-options { flex-direction: column; }
   .card:hover { transform: scale(1.02, 1.02); }
-  .tag-wrapper { width: 110px; height: 140px; }
-  .tag-image { width: 110px; height: 140px; }
+  .tag-wrapper { max-width: 110px; }
   .tag-wrapper:hover .tag-image { transform: scale(1.15); }
   .tag-wrapper:hover .tag-image img { transform: scale(1.2); }
-  .tag-header h4 { height: 140px; font-size: 0.75rem; }
-  .tag-wrapper:hover .tag-header h4:first-child { transform: translateY(-140px); }
-  .tag-wrapper:hover .tag-header h4:last-child { transform: translateY(-140px); }
-  .categories-grid { grid-template-columns: repeat(2, 110px); gap: 10px; }
+  .tag-header h4 { font-size: 0.75rem; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .bg-orbs { display: none; }
   .photographer-selector { grid-template-columns: repeat(2, 1fr); }
   .payment-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
-  .datepicker-popover { width: 280px; left: -40px; }
-  .timepicker-popover { width: 230px; }
+  .datepicker-popover { width: 280px; left: 0; right: auto; }
+  .timepicker-popover { width: 220px; }
   .reservas-layout { grid-template-columns: 1fr; }
 }
 
@@ -1607,8 +1602,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .tag-wrapper:active::before { background: rgba(0,0,0,0.15); }
   .tag-wrapper:active .tag-image { transform: scale(1.15); }
   .tag-wrapper:active .tag-image img { transform: scale(1.2); }
-  .tag-wrapper:active .tag-header h4:first-child { transform: translateY(-260px); }
-  .tag-wrapper:active .tag-header h4:last-child { transform: translateY(-260px); }
+  .tag-wrapper:active .tag-header h4:first-child { transform: translateY(-100%); }
+  .tag-wrapper:active .tag-header h4:last-child { transform: translateY(-100%); }
 
   /* Blob buttons — simplify on touch */
   .btn:hover .blob-btn__blob { transform: translateZ(0) scale(1.1); }
@@ -1823,6 +1818,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   left: 0;
   z-index: 100;
   width: 320px;
+  max-width: calc(100vw - 16px);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   display: none;
