@@ -1466,7 +1466,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 /* ============================================================
    PAGE TRANSITIONS
    ============================================================ */
-.page { display: none; animation: fadePage 0.4s ease; overflow-x: hidden; }
+.page { display: none; animation: fadePage 0.4s ease; overflow-x: hidden; padding-top: 110px; }
+#page-home.page { padding-top: 0; }
 .page.active { display: block; }
 @keyframes fadePage {
   from { opacity: 0; transform: translateY(16px); }
