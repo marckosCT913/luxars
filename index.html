@@ -34,41 +34,9 @@
   <nav class="navbar glass" id="navbar">
     <div class="container nav-container">
       <div class="nav-row">
-        <div class="nav-row-left">
-          <a href="#" class="logo" data-page="home">
-            <i class="fas fa-camera"></i> Lux<span>Ars</span>
-          </a>
-          <ul class="nav-links" id="navLinks">
-            <li><a href="#" data-page="home" class="active link">
-              <span class="link--top">Inicio</span>
-              <span class="link--bottom">Inicio</span>
-            </a></li>
-            <li><a href="#" data-page="catalog" class="link">
-              <span class="link--top">Explorar</span>
-              <span class="link--bottom">Explorar</span>
-            </a></li>
-            <li><a href="#" data-page="reservas" class="link">
-              <span class="link--top">Reservas</span>
-              <span class="link--bottom">Reservas</span>
-            </a></li>
-            <li><a href="#" data-page="portafolio" class="link">
-              <span class="link--top">Portafolio</span>
-              <span class="link--bottom">Portafolio</span>
-            </a></li>
-            <li><a href="#" data-page="fotografos" class="link">
-              <span class="link--top">Fotógrafos</span>
-              <span class="link--bottom">Fotógrafos</span>
-            </a></li>
-            <li><a href="#" data-page="soporte" class="link">
-              <span class="link--top">Soporte</span>
-              <span class="link--bottom">Soporte</span>
-            </a></li>
-            <li><a href="#" data-page="chat" class="link">
-              <span class="link--top">Chat</span>
-              <span class="link--bottom">Chat</span>
-            </a></li>
-          </ul>
-        </div>
+        <a href="#" class="logo" data-page="home">
+          <i class="fas fa-camera"></i> Lux<span>Ars</span>
+        </a>
         <div class="nav-row-right">
           <div class="user-badge" id="userBadge" style="display:none;">
             <button class="user-badge-btn" id="userBadgeBtn">
@@ -92,6 +60,48 @@
           <i class="fas fa-search"></i>
           <input type="text" id="quickSearch" placeholder="Busca por especialidad (retratos, eventos, moda...) o ubicación..." />
           <button class="btn btn-primary" id="quickSearchBtn">Buscar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide-out panel -->
+    <div class="nav-panel" id="navPanel">
+      <button class="nav-panel-close" id="navPanelClose"><i class="fas fa-times"></i></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" data-page="home" class="active link">
+          <span class="link--top">Inicio</span>
+          <span class="link--bottom">Inicio</span>
+        </a></li>
+        <li><a href="#" data-page="catalog" class="link">
+          <span class="link--top">Explorar</span>
+          <span class="link--bottom">Explorar</span>
+        </a></li>
+        <li><a href="#" data-page="reservas" class="link">
+          <span class="link--top">Reservas</span>
+          <span class="link--bottom">Reservas</span>
+        </a></li>
+        <li><a href="#" data-page="portafolio" class="link">
+          <span class="link--top">Portafolio</span>
+          <span class="link--bottom">Portafolio</span>
+        </a></li>
+        <li><a href="#" data-page="fotografos" class="link">
+          <span class="link--top">Fotógrafos</span>
+          <span class="link--bottom">Fotógrafos</span>
+        </a></li>
+        <li><a href="#" data-page="soporte" class="link">
+          <span class="link--top">Soporte</span>
+          <span class="link--bottom">Soporte</span>
+        </a></li>
+        <li><a href="#" data-page="chat" class="link">
+          <span class="link--top">Chat</span>
+          <span class="link--bottom">Chat</span>
+        </a></li>
+      </ul>
+      <div class="nav-panel-footer">
+        <a href="#" data-page="auth" class="btn btn-login panel-login-btn" id="panelLoginBtn"><i class="fas fa-sign-in-alt"></i> Ingresar</a>
+        <div class="panel-user" id="panelUser" style="display:none;">
+          <img id="panelAvatar" src="" alt="" />
+          <span id="panelName"></span>
         </div>
       </div>
     </div>

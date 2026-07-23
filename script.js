@@ -164,7 +164,8 @@ function renderGrid(containerId, data) {
 const navLinks = document.querySelectorAll('[data-page]');
 const pages = document.querySelectorAll('.page');
 const hamburger = document.getElementById('hamburger');
-const navList = document.getElementById('navLinks');
+const navPanel = document.getElementById('navPanel');
+const navPanelClose = document.getElementById('navPanelClose');
 
 function navigateTo(pageId) {
   pages.forEach(p => p.classList.remove('active'));
@@ -174,7 +175,7 @@ function navigateTo(pageId) {
   navLinks.forEach(l => l.classList.remove('active'));
   document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
 
-  navList.classList.remove('open');
+  navPanel.classList.remove('open');
   hamburger.classList.remove('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -187,15 +188,35 @@ navLinks.forEach(link => {
       document.querySelector('.auth-tab[data-tab="login"]').click();
     }
     navigateTo(page);
-    // Close mobile menu
     hamburger.classList.remove('active');
-    navList.classList.remove('open');
+    navPanel.classList.remove('open');
   });
 });
 
 hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('active');
-  navList.classList.toggle('open');
+  navPanel.classList.toggle('open');
+});
+
+navPanelClose.addEventListener('click', () => {
+  hamburger.classList.remove('active');
+  navPanel.classList.remove('open');
+});
+
+// Close panel on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && navPanel.classList.contains('open')) {
+    hamburger.classList.remove('active');
+    navPanel.classList.remove('open');
+  }
+});
+
+// Close panel on backdrop click
+navPanel.addEventListener('click', (e) => {
+  if (e.target === navPanel) {
+    hamburger.classList.remove('active');
+    navPanel.classList.remove('open');
+  }
 });
 
 // ----- Search tags -----
@@ -900,6 +921,8 @@ function logoutSession() {
 function updateNavbarUI() {
   const badge = document.getElementById('userBadge');
   const loginBtn = document.getElementById('loginBtn');
+  const panelLoginBtn = document.getElementById('panelLoginBtn');
+  const panelUser = document.getElementById('panelUser');
   if (!badge || !loginBtn) return;
 
   if (currentUser) {
@@ -907,9 +930,17 @@ function updateNavbarUI() {
     loginBtn.style.display = 'none';
     document.getElementById('userAvatar').src = currentUser.avatar;
     document.getElementById('userName').textContent = currentUser.name;
+    if (panelLoginBtn) panelLoginBtn.style.display = 'none';
+    if (panelUser) {
+      panelUser.style.display = 'flex';
+      document.getElementById('panelAvatar').src = currentUser.avatar;
+      document.getElementById('panelName').textContent = currentUser.name;
+    }
   } else {
     badge.style.display = 'none';
     loginBtn.style.display = 'inline-flex';
+    if (panelLoginBtn) panelLoginBtn.style.display = 'flex';
+    if (panelUser) panelUser.style.display = 'none';
   }
 }
 
@@ -1153,7 +1184,7 @@ document.getElementById('logoutBtn').addEventListener('click', function (e) {
   // Navigate to home
   document.querySelector('[data-page="home"]')?.click();
   hamburger.classList.remove('active');
-  navList.classList.remove('open');
+  navPanel.classList.remove('open');
 });
 
 document.addEventListener('click', function () {
