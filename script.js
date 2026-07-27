@@ -357,7 +357,7 @@ function closeAccessModal() {
   if (modal) modal.style.display = 'none';
 }
 
-function navigateTo(pageId) {
+function navigateTo(pageId, pushHistory) {
   if (pageId !== 'auth' && !hasAccess(pageId)) {
     const rule = ACCESS_RULES[pageId];
     showAccessModal(rule ? rule.msg : 'Acceso denegado.');
@@ -373,13 +373,15 @@ function navigateTo(pageId) {
   navPanel.classList.remove('open');
   hamburger.classList.remove('active');
   document.getElementById('navbar').removeAttribute('data-panel-open');
-  // Clear hash when leaving landing sections (replace so back doesn't re-enter hash)
-  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+
+  if (pushHistory !== false) {
+    history.pushState({ page: pageId }, '', '#' + pageId);
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ----- Smooth scroll to landing section -----
-function scrollToSection(sectionId) {
+function scrollToSection(sectionId, pushHistory) {
   const el = document.getElementById(sectionId);
   if (!el) return;
   // Ensure we're on the home page
@@ -391,7 +393,10 @@ function scrollToSection(sectionId) {
     document.querySelectorAll('[data-page="home"]').forEach(l => l.classList.add('active'));
   }
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  history.pushState(null, '', '#' + sectionId);
+
+  if (pushHistory !== false) {
+    history.pushState({ section: sectionId }, '', '#' + sectionId);
+  }
 
   navLinks.forEach(l => l.classList.remove('active'));
   document.querySelectorAll(`[data-section="${sectionId}"]`).forEach(l => l.classList.add('active'));
@@ -403,17 +408,39 @@ function scrollToSection(sectionId) {
 }
 
 // Handle popstate for browser back/forward
-window.addEventListener('popstate', () => {
-  const hash = location.hash.replace('#', '');
-  if (hash && document.getElementById(hash)) {
-    const el = document.getElementById(hash);
-    el.scrollIntoView({ behavior: 'instant', block: 'start' });
+window.addEventListener('popstate', (e) => {
+  const state = e.state;
+  if (state && state.page) {
+    navigateTo(state.page, false);
+    // scrollTo top is handled inside navigateTo
+  } else if (state && state.section) {
+    const el = document.getElementById(state.section);
+    if (el) {
+      // Ensure home page is active
+      const homePage = document.getElementById('page-home');
+      if (homePage && !homePage.classList.contains('active')) {
+        pages.forEach(p => p.classList.remove('active'));
+        homePage.classList.add('active');
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('[data-page="home"]').forEach(l => l.classList.add('active'));
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   } else {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // No state — go to home top
+    const homePage = document.getElementById('page-home');
+    if (homePage && !homePage.classList.contains('active')) {
+      pages.forEach(p => p.classList.remove('active'));
+      homePage.classList.add('active');
+      navLinks.forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('[data-page="home"]').forEach(l => l.classList.add('active'));
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 });
 
-navLinks.forEach(link => {
+// Bind clicks on both data-page and data-section nav links
+document.querySelectorAll('[data-page], [data-section]').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
     const section = link.dataset.section;
@@ -1447,13 +1474,19 @@ if (backToTop) {
   });
 }
 
-// ----- Handle initial hash (deep-link to section) -----
+// ----- History API: set initial state & deep-link -----
 (function() {
   const hash = location.hash.replace('#', '');
   if (hash && document.getElementById(hash)) {
+    // Deep-link: push the section state so back returns to home top
+    const sectionId = hash;
+    history.replaceState(null, '', location.pathname + location.search);
     requestAnimationFrame(() => {
-      document.getElementById(hash).scrollIntoView({ behavior: 'instant', block: 'start' });
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'instant', block: 'start' });
     });
+  } else {
+    // No hash: set initial null state
+    history.replaceState(null, '', location.pathname + location.search);
   }
 })();
 
