@@ -269,9 +269,9 @@ function createCard(photographer) {
     <article class="card photographer-card" data-id="${photographer.id}">
       ${hasPromo ? '<div class="promo-badge"></div>' : ''}
       <div class="card__img" style="background-image: url('${photographer.portfolio[0]}');"></div>
-      <a href="#" class="card_link">
+      <div class="card_link" role="button" tabindex="0">
         <div class="card__img--hover" style="background-image: url('${photographer.portfolio[0]}');"></div>
-      </a>
+      </div>
       <div class="card__info">
         <div class="card__info-header">
           <span class="card__category"><i class="fas fa-camera"></i> ${photographer.specialty}</span>
@@ -568,11 +568,6 @@ document.addEventListener('click', e => {
   if (e.target.closest('.book-now')) {
     navigateTo('dashboard');
     return;
-  }
-
-  // Prevent the card_link <a href="#"> from scrolling to top
-  if (e.target.closest('.card_link')) {
-    e.preventDefault();
   }
 
   // Any click on the card opens the profile (except .card__actions buttons)
