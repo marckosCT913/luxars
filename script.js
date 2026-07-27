@@ -1433,6 +1433,20 @@ initBookingSystem();
 initCustomPickers();
 initUploadSystem();
 
+// ----- Back to Top -----
+const backToTop = document.getElementById('backToTop');
+if (backToTop) {
+  window.addEventListener('scroll', () => {
+    const hero = document.getElementById('hero');
+    if (hero) {
+      backToTop.classList.toggle('visible', window.scrollY > hero.offsetHeight * 0.6);
+    }
+  }, { passive: true });
+  backToTop.addEventListener('click', () => {
+    scrollToSection('hero');
+  });
+}
+
 // ----- Handle initial hash (deep-link to section) -----
 (function() {
   const hash = location.hash.replace('#', '');
