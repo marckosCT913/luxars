@@ -15,6 +15,17 @@
 
   <div id="carousel-bg"></div>
 
+  <!-- ========== CAROUSEL LOADING / UI ========== -->
+  <div class="loading" id="loading">
+    <div id="loadingText">Loading...</div>
+    <div id="progressBar" style="width:200px;height:4px;background:rgba(255,255,255,0.1);margin-top:10px;">
+      <div id="progressFill" style="width:0%;height:100%;background:#FF0000;"></div>
+    </div>
+  </div>
+  <div id="ui" class="hint">Photo by <a href="https://unsplash.com/fr/@abstralofficial?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank" rel="noopener nofollow">Abstral Official</a> on <a href="https://unsplash.com/fr/@abstralofficial?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank" rel="noopener nofollow">Unsplash</a></div>
+  <div class="infos" id="lesInfos" onclick="this.style.display='none'">scroll &uarr;&darr; | drag | arrows &larr; &rarr; | click to hide</div>
+  <div class="copy">&amp;Toc</div>
+
   <!-- ========== ANIMATED BACKGROUND ========== -->
   <div class="bg-orbs">
     <div class="orb orb-1"></div>
@@ -1120,6 +1131,45 @@
 
   <script src="script.js"></script>
   <script src="carousel.js"></script>
+
+  <!-- Fullscreen button -->
+  <script>
+  (function() {
+    const expandIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+    const compressIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>';
+    function updateIcon(isFullscreen, btn) {
+      btn.innerHTML = isFullscreen ? compressIcon : expandIcon;
+      btn.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Fullscreen');
+    }
+    function createFSButton() {
+      const btn = document.createElement('button');
+      btn.setAttribute('aria-label', 'Fullscreen');
+      Object.assign(btn.style, {
+        all:'unset',position:'fixed',bottom:'20px',right:'20px',width:'44px',height:'44px',
+        borderRadius:'50%',background:'rgba(0,0,0,0.6)',backdropFilter:'blur(10px)',
+        border:'1px solid rgba(255,255,255,0.2)',color:'white',cursor:'pointer',zIndex:'1000',
+        display:'flex',alignItems:'center',justifyContent:'center',transition:'all 0.3s ease'
+      });
+      btn.innerHTML = expandIcon;
+      btn.addEventListener('mouseenter', () => btn.style.background = 'rgba(0,0,0,0.2)');
+      btn.addEventListener('mouseleave', () => btn.style.background = 'rgba(0,0,0,0.6)');
+      btn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen()
+            .then(() => updateIcon(true, btn))
+            .catch(err => console.error('Fullscreen error:', err.message));
+        } else {
+          document.exitFullscreen()
+            .then(() => updateIcon(false, btn))
+            .catch(err => console.error('Exit fullscreen error:', err.message));
+        }
+      });
+      document.addEventListener('fullscreenchange', () => updateIcon(!!document.fullscreenElement, btn));
+      document.body.appendChild(btn);
+    }
+    createFSButton();
+  })();
+  </script>
 
   <!-- SVG Goo Filter for Blob Buttons -->
   <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
