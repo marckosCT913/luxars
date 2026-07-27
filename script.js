@@ -564,12 +564,19 @@ document.addEventListener('click', e => {
   const card = e.target.closest('.photographer-card');
   if (!card) return;
 
+  // Book-now button → dashboard
   if (e.target.closest('.book-now')) {
     navigateTo('dashboard');
     return;
   }
 
-  if (!e.target.closest('.view-profile')) return;
+  // Prevent the card_link <a href="#"> from scrolling to top
+  if (e.target.closest('.card_link')) {
+    e.preventDefault();
+  }
+
+  // Any click on the card opens the profile (except .card__actions buttons)
+  if (e.target.closest('.card__actions')) return;
 
   const id = parseInt(card.dataset.id);
   const p = photographers.find(x => x.id === id);
