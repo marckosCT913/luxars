@@ -5,7 +5,11 @@
 
 (function () {
   const container = document.getElementById('carousel-bg');
-  if (!container || typeof THREE === 'undefined') return;
+  if (!container || typeof THREE === 'undefined') {
+    console.warn('LuxArs carousel: THREE not loaded or container missing');
+    return;
+  }
+  console.log('LuxArs carousel: initializing');
 
   let scrollY = 0;
   let targetScrollY = 0;
@@ -255,6 +259,8 @@
 
   // Scroll from page
   let ticking = false;
+  const BASE_OPACITY = 0.08;
+  const MAX_OPACITY = 0.25;
   window.addEventListener('scroll', function () {
     if (!ticking) {
       window.requestAnimationFrame(function () {
@@ -262,7 +268,7 @@
         // Fade in carousel after hero section (~100vh)
         const heroEnd = window.innerHeight;
         const progress = Math.min(1, Math.max(0, (window.scrollY - heroEnd * 0.3) / (heroEnd * 0.7)));
-        container.style.opacity = progress * 0.25;
+        container.style.opacity = BASE_OPACITY + (MAX_OPACITY - BASE_OPACITY) * progress;
         ticking = false;
       });
       ticking = true;
