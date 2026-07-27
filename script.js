@@ -373,12 +373,54 @@ function navigateTo(pageId) {
   navPanel.classList.remove('open');
   hamburger.classList.remove('active');
   document.getElementById('navbar').removeAttribute('data-panel-open');
+  // Clear hash when leaving landing sections (replace so back doesn't re-enter hash)
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// ----- Smooth scroll to landing section -----
+function scrollToSection(sectionId) {
+  const el = document.getElementById(sectionId);
+  if (!el) return;
+  // Ensure we're on the home page
+  const homePage = document.getElementById('page-home');
+  if (homePage && !homePage.classList.contains('active')) {
+    pages.forEach(p => p.classList.remove('active'));
+    homePage.classList.add('active');
+    navLinks.forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('[data-page="home"]').forEach(l => l.classList.add('active'));
+  }
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  history.pushState(null, '', '#' + sectionId);
+
+  navLinks.forEach(l => l.classList.remove('active'));
+  document.querySelectorAll(`[data-section="${sectionId}"]`).forEach(l => l.classList.add('active'));
+  document.querySelectorAll(`[data-page="home"]`).forEach(l => l.classList.add('active'));
+
+  navPanel.classList.remove('open');
+  hamburger.classList.remove('active');
+  document.getElementById('navbar').removeAttribute('data-panel-open');
+}
+
+// Handle popstate for browser back/forward
+window.addEventListener('popstate', () => {
+  const hash = location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    const el = document.getElementById(hash);
+    el.scrollIntoView({ behavior: 'instant', block: 'start' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+});
 
 navLinks.forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
+    const section = link.dataset.section;
+    if (section) {
+      scrollToSection(section);
+      return;
+    }
     const page = link.dataset.page;
     if (page === 'auth') {
       document.querySelector('.auth-tab[data-tab="login"]').click();
@@ -1390,6 +1432,16 @@ initBlobButtons();
 initBookingSystem();
 initCustomPickers();
 initUploadSystem();
+
+// ----- Handle initial hash (deep-link to section) -----
+(function() {
+  const hash = location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    requestAnimationFrame(() => {
+      document.getElementById(hash).scrollIntoView({ behavior: 'instant', block: 'start' });
+    });
+  }
+})();
 
 // ----- Session UI Events -----
 restoreSession();
