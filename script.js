@@ -372,6 +372,7 @@ function navigateTo(pageId) {
 
   navPanel.classList.remove('open');
   hamburger.classList.remove('active');
+  document.getElementById('navbar').removeAttribute('data-panel-open');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -391,11 +392,17 @@ navLinks.forEach(link => {
 hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('active');
   navPanel.classList.toggle('open');
+  if (navPanel.classList.contains('open')) {
+    document.getElementById('navbar').setAttribute('data-panel-open', '');
+  } else {
+    document.getElementById('navbar').removeAttribute('data-panel-open');
+  }
 });
 
 navPanelClose.addEventListener('click', () => {
   hamburger.classList.remove('active');
   navPanel.classList.remove('open');
+  document.getElementById('navbar').removeAttribute('data-panel-open');
 });
 
 document.getElementById('accessModalClose')?.addEventListener('click', closeAccessModal);
@@ -408,6 +415,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && navPanel.classList.contains('open')) {
     hamburger.classList.remove('active');
     navPanel.classList.remove('open');
+    document.getElementById('navbar').removeAttribute('data-panel-open');
   }
 });
 
@@ -416,6 +424,7 @@ navPanel.addEventListener('click', (e) => {
   if (e.target === navPanel) {
     hamburger.classList.remove('active');
     navPanel.classList.remove('open');
+    document.getElementById('navbar').removeAttribute('data-panel-open');
   }
 });
 
@@ -1398,6 +1407,7 @@ document.getElementById('logoutBtn').addEventListener('click', function (e) {
   document.querySelector('[data-page="home"]')?.click();
   hamburger.classList.remove('active');
   navPanel.classList.remove('open');
+  document.getElementById('navbar').removeAttribute('data-panel-open');
 });
 
 document.addEventListener('click', function () {

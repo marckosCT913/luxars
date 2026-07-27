@@ -588,6 +588,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .user-dropdown a:last-child { border-bottom: none; }
 .user-dropdown a:hover { background: rgba(255,0,0,0.06); color: var(--accent-red); }
 #loginBtn { display: inline-flex; }
+#navbar[data-panel-open] #loginBtn { display: none !important; }
 
 /* ============================================================
    HERO (Swiss: asymmetric, bold typography)
