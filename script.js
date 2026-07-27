@@ -451,11 +451,19 @@ function applyFilters() {
   filtered = filtered.filter(p => p.price <= maxPrice);
 
   renderGrid('catalogGrid', filtered);
-  // Close sidebar on mobile after filter
   document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('clearFilterBtn').style.display = specialty ? 'inline-flex' : 'none';
+}
+
+function clearFilters() {
+  document.getElementById('filterSpecialty').value = '';
+  document.getElementById('filterPrice').value = 500;
+  document.getElementById('priceValue').textContent = '500';
+  applyFilters();
 }
 
 document.getElementById('applyFilters').addEventListener('click', applyFilters);
+document.getElementById('clearFilterBtn').addEventListener('click', clearFilters);
 
 document.getElementById('filterPrice').addEventListener('input', function () {
   document.getElementById('priceValue').textContent = this.value;
