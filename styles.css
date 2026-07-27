@@ -25,16 +25,6 @@
 
 html { scroll-behavior: smooth; background: var(--bg-dark); }
 
-/* ----- Carousel Background (Three.js) ----- */
-#carousel-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.08;
-}
-#carousel-bg canvas { display: block; }
-
 body {
   font-family: var(--font);
   background: var(--gradient-bg);
