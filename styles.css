@@ -315,37 +315,6 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .logo i { color: var(--accent-red); }
 .logo span { color: var(--accent-red); }
 
-/* Nav search */
-.nav-search {
-  padding: 0 0 14px;
-}
-.nav-search .search-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 14px;
-  border: 1px solid var(--border-color);
-  background: rgba(30,30,30,0.5);
-}
-.nav-search .search-bar i { color: var(--text-secondary); font-size: 0.95rem; flex-shrink: 0; }
-.nav-search .search-bar input {
-  flex: 1;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-primary);
-  padding: 10px 0;
-  font-size: 0.85rem;
-}
-.nav-search .search-bar input::placeholder { color: rgba(160,160,160,0.4); }
-.nav-search .search-bar .btn {
-  flex-shrink: 0;
-  padding: 7px 18px;
-  font-size: 0.75rem;
-  width: auto;
-}
-
 /* ----- Hamburger (always visible) ----- */
 .hamburger {
   display: flex;
@@ -1531,7 +1500,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 .page { display: none; animation: fadePage 0.4s ease; overflow-x: hidden; }
 #page-home.page { padding-top: 0; }
 .page.active { display: block; }
-.page:not(#page-home) { padding-top: 120px; }
+.page:not(#page-home) { padding-top: 80px; }
 @keyframes fadePage {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1581,7 +1550,6 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .search-bar { flex-direction: column; }
   .search-bar .btn { width: 100%; justify-content: center; }
   .footer-content { flex-direction: column; gap: 16px; text-align: center; }
-  .nav-search .search-bar { flex-direction: row; }
   .categories-grid { gap: 0; display: flex; flex-direction: column; }
   .category-card:nth-child(5) { grid-column: auto; }
   /* Hide desktop card content */

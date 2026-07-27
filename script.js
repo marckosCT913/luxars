@@ -423,7 +423,6 @@ navPanel.addEventListener('click', (e) => {
 document.querySelectorAll('.category-card').forEach(card => {
   card.addEventListener('click', function (e) {
     if (e.target.closest('.cat-block-link')) return;
-    document.getElementById('quickSearch').value = this.dataset.filter;
     navigateTo('catalog');
     const filter = document.getElementById('filterSpecialty');
     if (filter) { filter.value = this.dataset.filter; applyFilters(); }
@@ -441,11 +440,6 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     card.classList.toggle('card-tapped');
   });
 }
-
-document.getElementById('quickSearchBtn').addEventListener('click', () => {
-  const val = document.getElementById('quickSearch').value.trim();
-  if (val) navigateTo('catalog');
-});
 
 // ----- Catalog filters -----
 function applyFilters() {
