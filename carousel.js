@@ -7,7 +7,6 @@
 
   var scrollY = 0;
   var targetScrollY = 0;
-  var scrollVelocity = 0;
   var materials = [];
   var totalImagesToLoad = 0;
   var loadedImagesCount = 0;
@@ -384,88 +383,13 @@
     });
   }
 
-  var isDragging = false;
-  var lastMouseY = 0;
-  var inertia = 0.92;
-
-  var baseScrollY = 0;
-  var offsetTargetScrollY = 0;
-  var offsetScrollY = 0;
-
   window.addEventListener('scroll', function () {
-    baseScrollY = window.scrollY * 0.5;
+    targetScrollY = window.scrollY * 0.5;
   }, { passive: true });
-
-  document.addEventListener('wheel', function (e) {
-    offsetTargetScrollY += e.deltaY * 0.3;
-    scrollVelocity = e.deltaY * 0.15;
-  }, { passive: true });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight' || e.key === 'Right') {
-      offsetTargetScrollY -= 50;
-      scrollVelocity = -8;
-    } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
-      offsetTargetScrollY += 50;
-      scrollVelocity = 8;
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      scrollVelocity = -scrollVelocity * 1.5;
-    } else if (e.key === 'r' || e.key === 'R') {
-      e.preventDefault();
-      recreateAllBands();
-    }
-  });
-
-  document.addEventListener('mousedown', function (e) {
-    isDragging = true;
-    lastMouseY = e.clientY;
-    scrollVelocity = 0;
-    document.body.style.cursor = 'grabbing';
-  });
-
-  document.addEventListener('mousemove', function (e) {
-    if (!isDragging) return;
-    var deltaY = e.clientY - lastMouseY;
-    offsetTargetScrollY += deltaY * 2.0;
-    lastMouseY = e.clientY;
-    scrollVelocity = deltaY * 0.25;
-  });
-
-  document.addEventListener('mouseup', function () {
-    isDragging = false;
-    document.body.style.cursor = 'default';
-  });
-
-  var lastTouchY = 0;
-  document.addEventListener('touchstart', function (e) {
-    lastTouchY = e.touches[0].clientY;
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function (e) {
-    var touchY = e.touches[0].clientY;
-    var deltaY = touchY - lastTouchY;
-    offsetTargetScrollY += deltaY * 2.5;
-    lastTouchY = touchY;
-    scrollVelocity = deltaY * 0.3;
-  }, { passive: true });
-
-  function applyInertia() {
-    if (!isDragging) {
-      offsetTargetScrollY += scrollVelocity;
-      scrollVelocity *= inertia;
-      if (Math.abs(scrollVelocity) < 0.5) {
-        scrollVelocity = 0;
-      }
-    }
-  }
 
   function animate() {
     requestAnimationFrame(animate);
-    applyInertia();
-    var smoothing = isDragging ? 0.3 : 0.1;
-    offsetScrollY += (offsetTargetScrollY - offsetScrollY) * smoothing;
-    scrollY = baseScrollY + offsetScrollY;
+    scrollY += (targetScrollY - scrollY) * 0.08;
     materials.forEach(function (material, index) {
       material.uniforms.uScroll.value = scrollY;
       material.uniforms.uTime.value += 0.016;
@@ -473,15 +397,6 @@
     });
     renderer.render(scene, camera);
   }
-
-  document.addEventListener('dblclick', function () {
-    offsetTargetScrollY = 0;
-    scrollVelocity = 0;
-  });
-
-  renderer.domElement.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
 
   window.addEventListener('resize', function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
