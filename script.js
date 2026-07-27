@@ -419,13 +419,14 @@ navPanel.addEventListener('click', (e) => {
   }
 });
 
-// ----- Search tags -----
+// ----- Category card clicks -----
 document.querySelectorAll('.category-card').forEach(card => {
   card.addEventListener('click', function (e) {
-    if (e.target.closest('.cat-block-link')) return;
+    e.preventDefault();
     navigateTo('catalog');
     const filter = document.getElementById('filterSpecialty');
     if (filter) { filter.value = this.dataset.filter; applyFilters(); }
+    document.getElementById('clearFilterBtn').style.display = 'none';
   });
 });
 

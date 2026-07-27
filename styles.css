@@ -1143,8 +1143,13 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
-.catalog-toolbar .btn { font-size: 0.7rem !important; padding: 8px 14px !important; }
+.catalog-toolbar .btn {
+  font-size: 0.7rem !important;
+  padding: 8px 14px !important;
+  line-height: 1.2;
+}
 
 /* ============================================================
    PROFILE PAGE
