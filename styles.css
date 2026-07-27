@@ -450,21 +450,9 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 }
 .nav-panel.open { right: 0; }
 .nav-panel-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: var(--transition);
+  display: none;
 }
-.nav-panel-close:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
 
 /* Nav links inside panel */
 .nav-panel .nav-links {
@@ -1741,7 +1729,6 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .cat-block-title { font-size: 0.95rem; }
   .cat-block-desc { font-size: 0.7rem; }
   .cat-block-link { font-size: 0.55rem; letter-spacing: 1px; }
-  .nav-panel-close { display: none; }
   .bg-orbs { display: none; }
   .photographer-selector { grid-template-columns: repeat(2, 1fr); }
   .payment-grid { grid-template-columns: 1fr; }
