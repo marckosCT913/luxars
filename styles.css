@@ -53,15 +53,15 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   position: absolute;
   border-radius: 50%;
   filter: blur(150px);
-  opacity: 0.15;
+  opacity: 0.25;
   animation: orbFloat 35s ease-in-out infinite;
 }
 .orb-1 { width: 800px; height: 800px; background: radial-gradient(circle, #FF0000, #8B0000); top: -20%; left: -10%; }
 .orb-2 { width: 650px; height: 650px; background: radial-gradient(circle, #8B0000, #4A0000); bottom: -20%; right: -10%; animation-delay: -9s; }
 .orb-3 { width: 500px; height: 500px; background: radial-gradient(circle, #CC0000, #660000); top: 35%; left: 45%; animation-delay: -15s; }
-.orb-4 { width: 400px; height: 400px; background: radial-gradient(circle, #FF3333, #990000); top: 5%; right: 55%; animation-delay: -22s; opacity: 0.08; }
-.orb-5 { width: 350px; height: 350px; background: radial-gradient(circle, #FF0000, #550000); bottom: 30%; left: 60%; animation-delay: -5s; opacity: 0.06; filter: blur(180px); }
-.orb-6 { width: 280px; height: 280px; background: radial-gradient(circle, #CC0000, #330000); top: 60%; left: 20%; animation-delay: -28s; opacity: 0.05; filter: blur(200px); }
+.orb-4 { width: 400px; height: 400px; background: radial-gradient(circle, #FF3333, #990000); top: 5%; right: 55%; animation-delay: -22s; opacity: 0.15; }
+.orb-5 { width: 350px; height: 350px; background: radial-gradient(circle, #FF0000, #550000); bottom: 30%; left: 60%; animation-delay: -5s; opacity: 0.12; filter: blur(180px); }
+.orb-6 { width: 280px; height: 280px; background: radial-gradient(circle, #CC0000, #330000); top: 60%; left: 20%; animation-delay: -28s; opacity: 0.1; filter: blur(200px); }
 
 @keyframes orbFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -76,16 +76,15 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='22' y='32' width='56' height='40' rx='4' fill='%23FF0000'/%3E%3Crect x='32' y='26' width='36' height='10' rx='2' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='13' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='8' fill='%23FF0000'/%3E%3Ccircle cx='50' cy='52' r='3' fill='%23121212'/%3E%3C/svg%3E") center / 40% no-repeat;
-  opacity: 0.04;
-  filter: blur(6px);
-  mix-blend-mode: screen;
-  animation: watermarkPulse 12s ease-in-out infinite;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='22' y='32' width='56' height='40' rx='4' fill='%23FF0000'/%3E%3Crect x='32' y='26' width='36' height='10' rx='2' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='13' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='8' fill='%23FF0000'/%3E%3Ccircle cx='50' cy='52' r='3' fill='%23121212'/%3E%3C/svg%3E") center / 35% no-repeat;
+  opacity: 0.1;
+  filter: blur(3px);
+  animation: watermarkPulse 15s ease-in-out infinite;
 }
 
 @keyframes watermarkPulse {
-  0%, 100% { opacity: 0.03; transform: scale(1); }
-  50% { opacity: 0.06; transform: scale(1.05); }
+  0%, 100% { opacity: 0.07; transform: scale(1); }
+  50% { opacity: 0.12; transform: scale(1.03); }
 }
 
 /* ----- Geometric Mesh Overlay (Swiss Design grid) ----- */
@@ -95,8 +94,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
   background-size: 60px 60px;
   animation: meshShift 40s linear infinite;
 }
@@ -385,9 +384,7 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   background: var(--text-primary);
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
-.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-.hamburger.active span:nth-child(2) { opacity: 0; }
-.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+.hamburger.active { opacity: 0; pointer-events: none; }
 
 /* ----- Slide-out Panel ----- */
 .nav-panel {
