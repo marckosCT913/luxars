@@ -1317,6 +1317,192 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 
 .back-btn { margin-bottom: 24px; }
 
+/* ----- Glass Card Base (used across all modules) ----- */
+.glass-card {
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+
+/* ============================================================
+   STATS COUNTERS SECTION (Landing)
+   ============================================================ */
+.stats-section {
+  padding: 80px 0;
+  position: relative;
+}
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.stat-counter-card {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.stat-counter-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-red);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+.stat-counter-card:hover::after { transform: scaleX(1); }
+.stat-counter-card:hover { border-color: var(--accent-red); transform: translateY(-4px); }
+.stat-counter-icon {
+  font-size: 2rem;
+  color: var(--accent-red);
+  margin-bottom: 16px;
+}
+.stat-counter-number {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-counter-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   TESTIMONIALS SECTION (Landing)
+   ============================================================ */
+.testimonials-section {
+  padding: 80px 0;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.testimonial-card {
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  position: relative;
+  transition: var(--transition);
+}
+.testimonial-card:hover {
+  border-color: var(--accent-red);
+  transform: translateY(-4px);
+}
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(255, 0, 0, 0.08);
+  pointer-events: none;
+}
+.testimonial-stars {
+  color: var(--accent-red);
+  font-size: 0.75rem;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+.testimonial-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+.testimonial-author img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+.testimonial-author-info strong {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.testimonial-author-info span {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   FINAL CTA SECTION (Landing)
+   ============================================================ */
+.cta-section {
+  padding: 100px 0;
+  text-align: center;
+  position: relative;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,0,0,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.cta-content h2 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+.cta-content h2 span { color: var(--accent-red); }
+.cta-content p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.cta-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* ----- Back to Top Button ----- */
 .back-to-top {
   position: fixed;
@@ -1660,6 +1846,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
    ============================================================ */
 
 @media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-content { text-align: left; }
   .hero-text p { margin: 0 0 32px; }
   .hero-cta { justify-content: flex-start; }
@@ -1677,6 +1865,10 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
 }
 
 @media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .stat-counter-number { font-size: 2.2rem; }
+  .cta-content h2 { font-size: 1.8rem; }
   .btn-login { padding: 8px 10px !important; font-size: 0 !important; }
   .btn-login i { font-size: 1rem; }
   .hero-text h1 { font-size: 2rem; }
@@ -1773,6 +1965,12 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   .cat-block-title { font-size: 0.95rem; }
   .cat-block-desc { font-size: 0.7rem; }
   .cat-block-link { font-size: 0.55rem; letter-spacing: 1px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-counter-card { padding: 24px 16px; }
+  .stat-counter-icon { font-size: 1.5rem; }
+  .stat-counter-number { font-size: 1.8rem; }
+  .testimonial-card { padding: 24px; }
+  .cta-content h2 { font-size: 1.5rem; }
   .bg-orbs { display: none; }
   .photographer-selector { grid-template-columns: repeat(2, 1fr); }
   .payment-grid { grid-template-columns: 1fr; }

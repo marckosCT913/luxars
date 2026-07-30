@@ -1461,6 +1461,7 @@ initBlobButtons();
 initBookingSystem();
 initCustomPickers();
 initUploadSystem();
+animateCounters();
 
 // ----- Back to Top -----
 const backToTop = document.getElementById('backToTop');
@@ -1474,6 +1475,38 @@ if (backToTop) {
   backToTop.addEventListener('click', () => {
     scrollToSection('hero');
   });
+}
+
+// ----- Animated Counters -----
+function animateCounters() {
+  const counters = document.querySelectorAll('.stat-counter-number[data-target]');
+  if (!counters.length) return;
+
+  const speed = 40;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const counter = entry.target;
+      observer.unobserve(counter);
+      const target = parseFloat(counter.dataset.target);
+      const isDecimal = target % 1 !== 0;
+      const increment = target / speed;
+      let current = 0;
+
+      function update() {
+        current += increment;
+        if (current < target) {
+          counter.textContent = isDecimal ? current.toFixed(1) : Math.ceil(current);
+          requestAnimationFrame(update);
+        } else {
+          counter.textContent = isDecimal ? target.toFixed(1) : target;
+        }
+      }
+      update();
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => observer.observe(c));
 }
 
 // ----- History API: set initial state & deep-link -----
