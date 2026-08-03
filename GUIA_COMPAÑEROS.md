@@ -3,7 +3,6 @@
 ## 1. Requisitos
 
 - Tener Git instalado
-- Tener Node.js instalado (para opencode)
 - Crear una cuenta en GitHub
 
 ## 2. Clonar el proyecto
