@@ -15,4 +15,4 @@ venv/
 *.egg-info/
 
 # OS / misc
-.DS_Store
+.DS_Storevenv/
