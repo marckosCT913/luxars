@@ -1,0 +1,18 @@
+# Django
+*.log
+db.sqlite3
+staticfiles/
+__pycache__/
+*.pyc
+
+# Environment / secrets (NUNCA subir)
+.env
+.env.local
+
+# Python
+venv/
+.venv/
+*.egg-info/
+
+# OS / misc
+.DS_Store

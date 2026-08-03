@@ -650,7 +650,7 @@ document.querySelectorAll('.auth-alt a').forEach(link => {
 // ----- Quote form -----
 document.getElementById('quoteForm').addEventListener('submit', e => {
   e.preventDefault();
-  alert('✅ Solicitud de cotización enviada con éxito. El fotógrafo te contactará pronto.');
+  luxAlert('Solicitud de cotización enviada con éxito. El fotógrafo te contactará pronto.', { type: 'success', title: 'Solicitud enviada' });
 });
 
 // ----- Scroll navbar effect -----
@@ -1155,7 +1155,60 @@ function renderMyReservations() {
     });
   });
 }
-// ----- Session System -----
+// ----- Lux Alert (custom modal) -----
+function luxAlert(message, opts = {}) {
+  const overlay = document.getElementById('luxAlert');
+  const icon = document.getElementById('luxAlertIcon');
+  const kicker = document.getElementById('luxAlertKicker');
+  const title = document.getElementById('luxAlertTitle');
+  const msg = document.getElementById('luxAlertMessage');
+  if (!overlay) return;
+
+  const o = Object.assign({ type: 'error', title: 'Aviso' }, opts);
+  const icons = {
+    error: '<i class="fas fa-exclamation"></i>',
+    success: '<i class="fas fa-check"></i>',
+    info: '<i class="fas fa-info"></i>'
+  };
+  const kickers = {
+    error: 'Lo sentimos',
+    success: 'Excelente',
+    info: 'Aviso'
+  };
+
+  icon.className = 'lux-alert-icon ' + o.type;
+  icon.innerHTML = icons[o.type];
+  kicker.textContent = kickers[o.type];
+  title.textContent = o.title;
+  msg.textContent = message;
+
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+}
+
+function closeLuxAlert() {
+  const overlay = document.getElementById('luxAlert');
+  if (!overlay) return;
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+document.getElementById('luxAlertClose')?.addEventListener('click', closeLuxAlert);
+document.getElementById('luxAlert')?.addEventListener('click', function (e) {
+  if (e.target === this) closeLuxAlert();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLuxAlert();
+});
+
+// ----- Session System / Supabase Auth -----
+const SUPABASE_CONFIGURED = !!(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
+let supabaseClient = null;
+if (SUPABASE_CONFIGURED && window.supabase) {
+  supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+}
+
+// Usuarios demo (solo cuando NO hay Supabase configurado)
 const APP_USERS = [
   { email: 'admin@luxars.com', pass: 'admin123', role: 'admin', name: 'Admin LuxArs', avatar: 'https://i.pravatar.cc/100?img=68' },
   { email: 'foto@luxars.com', pass: 'foto123', role: 'photographer', name: 'Fotógrafo Test', avatar: 'https://i.pravatar.cc/100?img=55' }
@@ -1168,31 +1221,76 @@ function saveSession(user) {
   updateNavbarUI();
 }
 
-function restoreSession() {
-  const raw = localStorage.getItem('luxars_session');
-  if (raw) {
-    try {
-      const user = JSON.parse(raw);
-      const valid = APP_USERS.find(u => u.email === user.email);
-      if (valid) {
-        currentUser = valid;
-        updateNavbarUI();
-        // Also update upload status if on portafolio
-        const status = document.getElementById('uploaderStatus');
-        if (status) {
-          status.textContent = `✅ Sesión iniciada como ${valid.name} (${valid.role}).`;
-          status.className = 'uploader-status success';
-          status.style.display = 'block';
-          setTimeout(() => { status.style.display = 'none'; }, 4000);
-        }
-      } else {
-        localStorage.removeItem('luxars_session');
-      }
-    } catch { localStorage.removeItem('luxars_session'); }
+async function fetchProfile(sessionUser) {
+  if (!supabaseClient) return null;
+  const { data } = await supabaseClient
+    .from('profiles')
+    .select('name, role, avatar_url')
+    .eq('id', sessionUser.id)
+    .maybeSingle();
+  return data;
+}
+
+function applyProfile(sessionUser, profile) {
+  const avatar = (profile && profile.avatar_url) || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(sessionUser.email || sessionUser.id);
+  currentUser = {
+    id: sessionUser.id,
+    email: sessionUser.email,
+    name: (profile && profile.name) || (sessionUser.email ? sessionUser.email.split('@')[0] : 'Usuario'),
+    role: (profile && profile.role) || 'client',
+    avatar: avatar
+  };
+  updateNavbarUI();
+  const status = document.getElementById('uploaderStatus');
+  if (status) {
+    status.textContent = `✅ Sesión iniciada como ${currentUser.name} (${currentUser.role}).`;
+    status.className = 'uploader-status success';
+    status.style.display = 'block';
+    setTimeout(() => { status.style.display = 'none'; }, 4000);
   }
 }
 
-function logoutSession() {
+async function restoreSession() {
+  // Modo demo (sin Supabase)
+  if (!supabaseClient) {
+    const raw = localStorage.getItem('luxars_session');
+    if (raw) {
+      try {
+        const user = JSON.parse(raw);
+        const valid = APP_USERS.find(u => u.email === user.email);
+        if (valid) {
+          currentUser = valid;
+          updateNavbarUI();
+        } else {
+          localStorage.removeItem('luxars_session');
+        }
+      } catch { localStorage.removeItem('luxars_session'); }
+    }
+    return;
+  }
+
+  // Modo Supabase
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session && session.user) {
+    const profile = await fetchProfile(session.user);
+    applyProfile(session.user, profile);
+  }
+
+  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    if (session && session.user) {
+      const profile = await fetchProfile(session.user);
+      applyProfile(session.user, profile);
+    } else {
+      currentUser = null;
+      updateNavbarUI();
+    }
+  });
+}
+
+async function logoutSession() {
+  if (supabaseClient) {
+    await supabaseClient.auth.signOut();
+  }
   currentUser = null;
   localStorage.removeItem('luxars_session');
   updateNavbarUI();
@@ -1265,29 +1363,43 @@ function initUploadSystem() {
   });
 
   // Auth form submit
-  document.getElementById('uploadAuthForm').addEventListener('submit', function (e) {
+  document.getElementById('uploadAuthForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const email = document.getElementById('uploadAuthEmail').value.trim();
     const pass = document.getElementById('uploadAuthPass').value.trim();
     const errorEl = document.getElementById('uploadAuthError');
 
-    const user = UPLOAD_USERS.find(u => u.email === email && u.pass === pass);
-    if (!user) {
-      errorEl.textContent = 'Credenciales incorrectas. Solo administradores y fotógrafos pueden subir contenido.';
-      errorEl.style.display = 'block';
+    // Modo demo
+    if (!supabaseClient) {
+      const user = UPLOAD_USERS.find(u => u.email === email && u.pass === pass);
+      if (!user) {
+        errorEl.textContent = 'Credenciales incorrectas. Solo administradores y fotógrafos pueden subir contenido.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      saveSession(user);
+      errorEl.style.display = 'none';
+      document.getElementById('uploadAuthOverlay').style.display = 'none';
+      openUploadModal();
       return;
     }
 
-    saveSession(user);
+    // Modo Supabase
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      errorEl.textContent = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+      errorEl.style.display = 'block';
+      return;
+    }
     errorEl.style.display = 'none';
     document.getElementById('uploadAuthOverlay').style.display = 'none';
 
-    const status = document.getElementById('uploaderStatus');
-    status.textContent = `✅ Sesión iniciada como ${user.name} (${user.role}).`;
-    status.className = 'uploader-status success';
-    status.style.display = 'block';
-    setTimeout(() => { status.style.display = 'none'; }, 4000);
-
+    const profile = await fetchProfile(data.user);
+    applyProfile(data.user, profile);
+    if (currentUser.role !== 'photographer' && currentUser.role !== 'admin') {
+      luxAlert('Solo administradores y fotógrafos pueden subir contenido.', { title: 'Permiso denegado' });
+      return;
+    }
     openUploadModal();
   });
 
@@ -1353,7 +1465,7 @@ function initUploadSystem() {
 function handleFileSelect(file) {
   const maxBytes = 50 * 1024 * 1024;
   if (file.size > maxBytes) {
-    alert('El archivo supera el máximo de 50MB');
+    luxAlert('El archivo supera el máximo permitido de 50MB.', { title: 'Archivo demasiado grande' });
     return;
   }
   selectedFile = file;
@@ -1422,38 +1534,129 @@ function handleUploadSubmit() {
   const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
   const type = document.querySelector('.upload-type-btn.active')?.dataset?.type || 'imagen';
 
-  // Simulate upload — add the uploaded item to the portfolio grid
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const container = document.getElementById('uploadedItems');
-    const imgUrl = type === 'imagen' ? e.target.result : 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop';
-    const item = document.createElement('div');
-    item.className = 'portfolio-item uploaded-item';
-    item.innerHTML = `
-      <img src="${imgUrl}" alt="${title}" />
+  // Modo demo (sin Supabase) — simula la subida local
+  if (!supabaseClient || !currentUser) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const container = document.getElementById('uploadedItems');
+      const imgUrl = type === 'imagen' ? e.target.result : 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop';
+      const item = document.createElement('div');
+      item.className = 'portfolio-item uploaded-item';
+      item.innerHTML = `
+        <img src="${imgUrl}" alt="${title}" />
+        <div class="portfolio-overlay">
+          <h4>${title}</h4>
+          <span>${desc ? desc.substring(0, 30) + (desc.length > 30 ? '...' : '') : 'Subido recientemente'}</span>
+        </div>
+      `;
+      container.appendChild(item);
+
+      feedback.textContent = '✅ Contenido subido exitosamente al portafolio.';
+      feedback.className = 'upload-feedback success';
+      feedback.style.display = 'block';
+
+      setTimeout(() => {
+        closeUploadModal();
+        feedback.style.display = 'none';
+      }, 1500);
+    };
+
+    if (type === 'imagen') {
+      reader.readAsDataURL(selectedFile);
+    } else {
+      reader.onload({ target: { result: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop' } });
+    }
+    return;
+  }
+
+  // Modo Supabase — sube el archivo real a Storage
+  feedback.textContent = 'Subiendo contenido...';
+  feedback.className = 'upload-feedback';
+  feedback.style.display = 'block';
+  document.getElementById('uploadSubmit').disabled = true;
+
+  supabaseUpload(selectedFile, title, desc, tags, type, feedback);
+}
+
+async function supabaseUpload(file, title, desc, tags, type, feedback) {
+  const ext = (file.name.split('.').pop() || (type === 'imagen' ? 'jpg' : 'mp4')).toLowerCase();
+  const filePath = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error: upError } = await supabaseClient.storage
+    .from('portfolios')
+    .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+  if (upError) {
+    feedback.textContent = '⚠️ Error al subir el archivo: ' + upError.message;
+    feedback.className = 'upload-feedback error';
+    feedback.style.display = 'block';
+    document.getElementById('uploadSubmit').disabled = false;
+    return;
+  }
+
+  const { data: urlData } = supabaseClient.storage.from('portfolios').getPublicUrl(filePath);
+  const fileUrl = urlData.publicUrl;
+
+  const { error: dbError } = await supabaseClient.from('portfolio_items').insert({
+    user_id: currentUser.id,
+    title,
+    description: desc || null,
+    tags,
+    type,
+    file_url: fileUrl
+  });
+
+  if (dbError) {
+    feedback.textContent = '⚠️ Error al guardar en la base de datos: ' + dbError.message;
+    feedback.className = 'upload-feedback error';
+    feedback.style.display = 'block';
+    document.getElementById('uploadSubmit').disabled = false;
+    return;
+  }
+
+  feedback.textContent = '✅ Contenido subido exitosamente al portafolio.';
+  feedback.className = 'upload-feedback success';
+  feedback.style.display = 'block';
+  document.getElementById('uploadSubmit').disabled = false;
+
+  await loadPortfolio();
+
+  setTimeout(() => {
+    closeUploadModal();
+    feedback.style.display = 'none';
+  }, 1500);
+}
+
+async function loadPortfolio() {
+  const container = document.getElementById('uploadedItems');
+  if (!container || !supabaseClient) return;
+
+  const { data, error } = await supabaseClient
+    .from('portfolio_items')
+    .select('id, title, description, type, file_url, created_at')
+    .order('created_at', { ascending: false });
+
+  if (error) return;
+
+  container.innerHTML = '';
+  data.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'portfolio-item uploaded-item';
+    const media = item.type === 'video'
+      ? `<video src="${item.file_url}" muted playsinline preload="metadata"></video>`
+      : `<img src="${item.file_url}" alt="${item.title}" loading="lazy" />`;
+    const shortDesc = item.description
+      ? item.description.substring(0, 30) + (item.description.length > 30 ? '...' : '')
+      : 'Subido recientemente';
+    el.innerHTML = `
+      ${media}
       <div class="portfolio-overlay">
-        <h4>${title}</h4>
-        <span>${desc ? desc.substring(0, 30) + (desc.length > 30 ? '...' : '') : 'Subido recientemente'}</span>
+        <h4>${item.title}</h4>
+        <span>${shortDesc}</span>
       </div>
     `;
-    container.appendChild(item);
-
-    feedback.textContent = '✅ Contenido subido exitosamente al portafolio.';
-    feedback.className = 'upload-feedback success';
-    feedback.style.display = 'block';
-
-    setTimeout(() => {
-      closeUploadModal();
-      feedback.style.display = 'none';
-    }, 1500);
-  };
-
-  if (type === 'imagen') {
-    reader.readAsDataURL(selectedFile);
-  } else {
-    // For video, use a placeholder image
-    reader.onload({ target: { result: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=300&fit=crop' } });
-  }
+    container.appendChild(el);
+  });
 }
 renderGrid('featuredGrid', photographers.slice(0, 3));
 renderGrid('catalogGrid', photographers);
@@ -1461,6 +1664,7 @@ initBlobButtons();
 initBookingSystem();
 initCustomPickers();
 initUploadSystem();
+loadPortfolio();
 animateCounters();
 
 // ----- Back to Top -----
@@ -1549,22 +1753,105 @@ document.addEventListener('click', function () {
 });
 
 // Main auth page login
-document.querySelector('#page-auth #auth-login form').addEventListener('submit', function (e) {
+document.querySelector('#page-auth #auth-login form').addEventListener('submit', async function (e) {
   e.preventDefault();
+  const btn = this.querySelector('button[type="submit"]');
   const email = this.querySelector('input[type="email"]').value.trim();
   const pass = this.querySelector('input[type="password"]').value.trim();
-  const user = APP_USERS.find(u => u.email === email && u.pass === pass);
-  if (user) {
-    saveSession(user);
-    const status = document.getElementById('uploaderStatus');
-    if (status) {
-      status.textContent = '✅ Sesión iniciada como ' + user.name + ' (' + user.role + ').';
-      status.className = 'uploader-status success';
-      status.style.display = 'block';
-      setTimeout(() => { status.style.display = 'none'; }, 4000);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ingresando'; }
+
+  // Modo demo
+  if (!supabaseClient) {
+    const user = APP_USERS.find(u => u.email === email && u.pass === pass);
+    if (user) {
+      saveSession(user);
+      document.querySelector('[data-page="home"]')?.click();
+    } else {
+      luxAlert('Las credenciales no corresponden a ningún usuario registrado. Verifica tu correo y contraseña.', { title: 'Acceso denegado' });
     }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Ingresar'; }
+    return;
+  }
+
+  // Modo Supabase
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Ingresar'; }
+
+  if (error) {
+    let msg = 'Las credenciales no corresponden a ningún usuario registrado. Verifica tu correo y contraseña.';
+    let title = 'Acceso denegado';
+    if (error.message && /invalid login credentials/i.test(error.message)) {
+      msg = 'No estás registrado en LuxArs. Crea una cuenta gratis para continuar.';
+      title = 'Usuario no registrado';
+    }
+    luxAlert(msg, { title });
+    return;
+  }
+
+  const profile = await fetchProfile(data.user);
+  applyProfile(data.user, profile);
+  document.querySelector('[data-page="home"]')?.click();
+});
+
+// Main auth page register
+document.querySelector('#page-auth #auth-register form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const btn = this.querySelector('button[type="submit"]');
+  const name = this.querySelector('input[type="text"]').value.trim();
+  const email = this.querySelector('input[type="email"]').value.trim();
+  const pass = this.querySelector('input[type="password"]').value.trim();
+  const role = (this.querySelector('input[name="role"]:checked') || {}).value || 'client';
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando cuenta'; }
+
+  // Modo demo
+  if (!supabaseClient) {
+    if (APP_USERS.some(u => u.email === email)) {
+      luxAlert('Ya existe una cuenta con este correo. Inicia sesión.', { title: 'Correo en uso' });
+    } else {
+      APP_USERS.push({ email, pass, role, name, avatar: 'https://i.pravatar.cc/100?u=' + encodeURIComponent(email) });
+      luxAlert('Cuenta creada. Ahora inicia sesión.', { type: 'success', title: 'Cuenta creada' });
+      document.querySelector('.auth-tab[data-tab="login"]').click();
+    }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-check"></i> Crear cuenta'; }
+    return;
+  }
+
+  // Modo Supabase
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { name, role } }
+  });
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-check"></i> Crear cuenta'; }
+
+  if (error) {
+    let msg = error.message;
+    let title = 'No se pudo crear la cuenta';
+    if (error.code === 'email_exists' || /already registered/i.test(error.message)) {
+      msg = 'Ya existe una cuenta con este correo. Inicia sesión.';
+      title = 'Correo en uso';
+    }
+    luxAlert(msg, { title });
+    return;
+  }
+
+  if (data.user) {
+    await supabaseClient.from('profiles').upsert({
+      id: data.user.id,
+      email: data.user.email,
+      name,
+      role,
+      avatar_url: null
+    });
+  }
+
+  if (data.session) {
+    const profile = await fetchProfile(data.user);
+    applyProfile(data.user, profile);
+    luxAlert('Tu cuenta fue creada e inició sesión correctamente.', { type: 'success', title: 'Bienvenido a LuxArs' });
     document.querySelector('[data-page="home"]')?.click();
   } else {
-    alert('Credenciales incorrectas. Prueba con admin@luxars.com / admin123');
+    luxAlert('Cuenta creada. Revisa tu correo para confirmar la cuenta antes de iniciar sesión.', { type: 'success', title: 'Cuenta creada' });
+    document.querySelector('.auth-tab[data-tab="login"]').click();
   }
 });

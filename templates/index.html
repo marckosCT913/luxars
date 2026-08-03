@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="styles.css" />
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='22' y='32' width='56' height='40' rx='4' fill='%23FF0000'/%3E%3Crect x='32' y='26' width='36' height='10' rx='2' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='13' fill='%23121212'/%3E%3Ccircle cx='50' cy='52' r='8' fill='%23FF0000'/%3E%3Ccircle cx='50' cy='52' r='3' fill='%23121212'/%3E%3C/svg%3E" />
 </head>
@@ -768,6 +769,8 @@
         </div>
         <div id="uploaderStatus" class="uploader-status"></div>
         <div class="portfolio-grid" id="portfolioGrid">
+          <!-- Uploaded items appear here (at the top) -->
+          <div id="uploadedItems"></div>
           <div class="portfolio-item">
             <img src="https://images.unsplash.com/photo-1b23196431a819b5ea1e?w=400&h=300&fit=crop" alt="" />
             <div class="portfolio-overlay">
@@ -810,8 +813,6 @@
               <span>22 imágenes</span>
             </div>
           </div>
-          <!-- Uploaded items appear here -->
-          <div id="uploadedItems"></div>
         </div>
       </div>
 
@@ -1237,7 +1238,24 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Custom Alert Modal -->
+  <div id="luxAlert" class="lux-alert-overlay" role="alertdialog" aria-modal="true" aria-hidden="true">
+    <div class="lux-alert-card">
+      <div class="lux-alert-frame"></div>
+      <div class="lux-alert-icon" id="luxAlertIcon"></div>
+      <span class="lux-alert-kicker" id="luxAlertKicker"></span>
+      <h3 class="lux-alert-title" id="luxAlertTitle"></h3>
+      <p class="lux-alert-message" id="luxAlertMessage"></p>
+      <button class="lux-alert-close" id="luxAlertClose"><i class="fas fa-times"></i> ENTENDIDO</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = "{{ SUPABASE_URL }}";
+    window.SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
+  </script>
+  <script src="{% static 'js/script.js' %}"></script>
 
   <!-- SVG Goo Filter for Blob Buttons -->
   <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
