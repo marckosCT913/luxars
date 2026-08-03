@@ -33,6 +33,13 @@
     <div class="float-photo ph-6" style="background-image:url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop');"></div>
   </div>
 
+  <!-- ========== LAVA LAMP / LIQUID GRADIENT BACKGROUND ========== -->
+  <div class="lava-bg" aria-hidden="true">
+    <div class="lava-blob blob-a"></div>
+    <div class="lava-blob blob-b"></div>
+    <div class="lava-blob blob-c"></div>
+  </div>
+
   <!-- ========== WATERMARK LOGO (designxhand-style) ========== -->
   <div class="bg-watermark" aria-hidden="true"></div>
 
@@ -1238,6 +1245,28 @@
   </div>
 
   <script src="script.js"></script>
+
+  <script>
+  (function () {
+    var bg = document.querySelector('.lava-bg');
+    if (!bg) return;
+    var ticking = false;
+    function applyScroll() {
+      var y = window.scrollY || document.documentElement.scrollTop || 0;
+      var tilt = Math.min(6, y * 0.02);
+      bg.style.transform = 'perspective(1200px) rotateX(' + tilt + 'deg) scale(1.03)';
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(applyScroll);
+        ticking = true;
+      }
+    }
+    applyScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+  </script>
 
   <!-- SVG Goo Filter for Blob Buttons -->
   <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">

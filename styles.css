@@ -191,6 +191,75 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   100% { transform: translate(10px, -20px) rotate(0.5deg) scale(1.01); background-position: center; }
 }
 
+/* ----- Lava Lamp / Liquid Gradient Background ----- */
+.lava-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: #0a0a0a;
+}
+.lava-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+.blob-a {
+  width: 62vmax;
+  height: 62vmax;
+  left: -15vmax;
+  top: -12vh;
+  background: radial-gradient(circle at 40% 40%, #7a0000 0%, #4a0000 45%, #1f0000 100%);
+  opacity: 0.5;
+  animation: 22s ease-in-out infinite;
+  animation-name: lavaA;
+}
+.blob-b {
+  width: 48vmax;
+  height: 48vmax;
+  right: -12vmax;
+  bottom: -8vh;
+  background: radial-gradient(circle at 55% 50%, #4a0000 0%, #290000 55%, #140000 100%);
+  opacity: 0.5;
+  animation: 24s ease-in-out infinite;
+  animation-name: lavaB;
+}
+.blob-c {
+  width: 40vmax;
+  height: 40vmax;
+  left: 22vw;
+  top: 30vh;
+  background: radial-gradient(circle at 50% 50%, #0a2a2a 0%, #071d1d 45%, #041414 100%);
+  opacity: 0.4;
+  animation: 22s ease-in-out infinite;
+  animation-name: lavaC;
+}
+@keyframes lavaA {
+  0%   { transform: translate(0, 0) scale(1);    opacity: 0.5; }
+  25%  { transform: translate(8vmax, -6vmax) scale(1.18); opacity: 0.7; }
+  45%  { transform: translate(-6vmax, 10vmax) scale(0.88); opacity: 0.4; }
+  65%  { transform: translate(5vmax, -11vmax) scale(1.06); opacity: 0.6; }
+  85%  { transform: translate(-9vmax, -5vmax) scale(1.22); opacity: 0.38; }
+  100% { transform: translate(0, 0) scale(1);    opacity: 0.5; }
+}
+@keyframes lavaB {
+  0%   { transform: translate(0, 0) scale(1.1); opacity: 0.5; }
+  30%  { transform: translate(-7vmax, 8vmax) scale(0.88); opacity: 0.38; }
+  55%  { transform: translate(5vmax, -8vmax) scale(1.26); opacity: 0.7; }
+  75%  { transform: translate(-4vmax, 6vmax) scale(1.0);  opacity: 0.45; }
+  100% { transform: translate(0, 0) scale(1.1); opacity: 0.5; }
+}
+@keyframes lavaC {
+  0%   { transform: translate(0, 0) scale(1);    opacity: 0.4; }
+  33%  { transform: translate(6vmax, 6vmax) scale(1.32); opacity: 0.55; }
+  58%  { transform: translate(-6vmax, -9vmax) scale(0.84); opacity: 0.3; }
+  80%  { transform: translate(3vmax, -4vmax) scale(1.12); opacity: 0.48; }
+  100% { transform: translate(0, 0) scale(1);    opacity: 0.4; }
+}
+
 /* ----- Container ----- */
 .container {
   max-width: 1200px;
