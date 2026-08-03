@@ -1778,12 +1778,38 @@ document.querySelector('#page-auth #auth-login form').addEventListener('submit',
   if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Ingresar'; }
 
   if (error) {
-    let msg = 'Las credenciales no corresponden a ningún usuario registrado. Verifica tu correo y contraseña.';
+    // Normaliza el mensaje real de Supabase (código HTTP incluido) para poder
+    // diagnosticar y mostrar al usuario la causa exacta del rechazo del login.
+    const rawMsg = (typeof error.message === 'string' ? error.message : '') + (error.status ? ' (' + error.status + ')' : '');
+
+    // Mensaje por defecto: credenciales incorrectas (causa más común).
+    let msg = rawMsg || 'Las credenciales no corresponden a ningún usuario registrado. Verifica tu correo y contraseña.';
     let title = 'Acceso denegado';
-    if (error.message && /invalid login credentials/i.test(error.message)) {
-      msg = 'No estás registrado en LuxArs. Crea una cuenta gratis para continuar.';
+
+    // Caso 1: la cuenta existe pero el correo aún no se confirma.
+    // Ocurre cuando Supabase tiene 'Confirm email' activado (por defecto).
+    if (/email not confirmed|email_not_confirmed/i.test(rawMsg)) {
+      msg = 'Todavía no confirmas tu correo. Revisa tu bandeja de entrada (y spam) y haz clic en el enlace de confirmación, o elimina el requisito de confirmación en Supabase.';
+      title = 'Correo sin confirmar';
+    }
+
+    // Caso 2: el usuario/contraseña no existen (o están bloqueados por confirmación).
+    if (/invalid login credentials|invalid_credentials/i.test(rawMsg)) {
+      msg = 'Usuario no registrado o contraseña incorrecta. Si te registraste, confirma antes tu correo.';
       title = 'Usuario no registrado';
     }
+
+    // Caso 3: Supabase limitó el envío de correos (plan gratuito) y bloquea login/registro.
+    if (/rate limit|over_email_send_rate_limit|429/i.test(rawMsg)) {
+      msg = 'Supabase está limitando el envío de correos. Desactiva "Confirm email" (o revisa el límite de emails) en el panel de Supabase para poder registrar/entrar.';
+      title = 'Límite de envío de correos';
+    }
+
+    // Depuración: si hay flag LUX_DEBUG o un code, vuelca el objeto completo a la consola.
+    if (window.LUX_DEBUG || error.code) {
+      console.error('[LuxArs login]', error);
+    }
+
     luxAlert(msg, { title });
     return;
   }
