@@ -1304,6 +1304,8 @@ function updateNavbarUI() {
   const loginBtn = document.getElementById('loginBtn');
   const panelLoginBtn = document.getElementById('panelLoginBtn');
   const panelUser = document.getElementById('panelUser');
+  const panelLogoutBtn = document.getElementById('panelLogoutBtn');
+  const heroText = document.getElementById('heroText');
   if (!badge || !loginBtn) return;
 
   if (currentUser) {
@@ -1317,11 +1319,15 @@ function updateNavbarUI() {
       document.getElementById('panelAvatar').src = currentUser.avatar;
       document.getElementById('panelName').textContent = currentUser.name;
     }
+    if (panelLogoutBtn) panelLogoutBtn.style.display = 'flex';
+    if (heroText) heroText.style.display = 'none';
   } else {
     badge.style.display = 'none';
     loginBtn.style.display = 'inline-flex';
     if (panelLoginBtn) panelLoginBtn.style.display = 'flex';
     if (panelUser) panelUser.style.display = 'none';
+    if (panelLogoutBtn) panelLogoutBtn.style.display = 'none';
+    if (heroText) heroText.style.display = '';
   }
 
   // Toggle lock state on restricted nav links
@@ -1742,6 +1748,15 @@ document.getElementById('logoutBtn').addEventListener('click', function (e) {
   document.getElementById('userDropdown').classList.remove('open');
   logoutSession();
   // Navigate to home
+  document.querySelector('[data-page="home"]')?.click();
+  hamburger.classList.remove('active');
+  navPanel.classList.remove('open');
+  document.getElementById('navbar').removeAttribute('data-panel-open');
+});
+
+document.getElementById('panelLogoutBtn').addEventListener('click', function (e) {
+  e.preventDefault();
+  logoutSession();
   document.querySelector('[data-page="home"]')?.click();
   hamburger.classList.remove('active');
   navPanel.classList.remove('open');

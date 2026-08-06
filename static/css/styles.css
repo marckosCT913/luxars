@@ -542,6 +542,27 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   transition: var(--transition);
 }
 .panel-login-btn:hover { background: rgba(255,0,0,0.1); }
+.panel-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 24px;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary) !important;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.panel-logout-btn:hover {
+  color: var(--accent-red) !important;
+  border-color: var(--accent-red);
+}
 .panel-user {
   display: flex;
   align-items: center;
