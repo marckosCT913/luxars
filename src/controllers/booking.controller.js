@@ -1,55 +1,96 @@
 /**
  * @file booking.controller.js
- * @description Controlador para gestionar las operaciones CRUD del módulo de Reservas en LuxArs.
+ * @description Controlador para gestionar las operaciones CRUD del módulo de reservas de LuxArs.
+ *
+ * Este archivo encapsula la lógica de negocio para crear, consultar, actualizar y eliminar
+ * registros de reservas en la base de datos MongoDB mediante Mongoose.
  */
+
 import Booking from '../models/booking.model.js';
 
 /**
+ * @typedef {import('express').Request} Request
+ * @typedef {import('express').Response} Response
+ */
+
+/**
+ * Obtiene la lista completa de reservas registradas.
+ *
+ * @async
  * @function find
- * @description Obtiene todas las reservas de la base de datos.
+ * @param {Request} req - Objeto de solicitud HTTP.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @returns {Promise<Response>} Respuesta con el listado de reservas o un error.
  */
 const find = async (req, res) => {
   try {
-    const bookings = await Booking.find();
-    res.status(200).json(bookings);
+    const bookings = await Booking.find().sort({ createdAt: -1 });
+    return res.status(200).json(bookings);
   } catch (error) {
-    res.status(500).json({ message: 'Error al consultar las reservas', error: error.message });
+    return res.status(500).json({
+      message: 'Error al consultar las reservas',
+      error: error.message
+    });
   }
 };
 
 /**
+ * Consulta una reserva por su identificador único.
+ *
+ * @async
  * @function findOne
- * @description Obtiene una reserva específica según su ID.
+ * @param {Request} req - Solicitud con el parámetro `id`.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @returns {Promise<Response>} Reserva encontrada o mensaje de no encontrado.
  */
 const findOne = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
+
     if (!booking) {
       return res.status(404).json({ message: 'Reserva no encontrada' });
     }
-    res.status(200).json(booking);
+
+    return res.status(200).json(booking);
   } catch (error) {
-    res.status(500).json({ message: 'Error al consultar la reserva', error: error.message });
+    return res.status(500).json({
+      message: 'Error al consultar la reserva',
+      error: error.message
+    });
   }
 };
 
 /**
+ * Crea una nueva reserva con la información recibida en el cuerpo de la solicitud.
+ *
+ * @async
  * @function InsertOne
- * @description Crea e inserta una nueva reserva en la base de datos.
+ * @param {Request} req - Solicitud HTTP con el payload de la reserva.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @returns {Promise<Response>} Recurso creado con estado 201.
  */
 const InsertOne = async (req, res) => {
   try {
     const newBooking = new Booking(req.body);
     const savedBooking = await newBooking.save();
-    res.status(201).json(savedBooking);
+
+    return res.status(201).json(savedBooking);
   } catch (error) {
-    res.status(400).json({ message: 'Error al crear la reserva', error: error.message });
+    return res.status(400).json({
+      message: 'Error al crear la reserva',
+      error: error.message
+    });
   }
 };
 
 /**
+ * Actualiza una reserva existente por su ID.
+ *
+ * @async
  * @function findOneAndUpdate
- * @description Busca una reserva por su ID y la actualiza con los nuevos datos recibidos.
+ * @param {Request} req - Solicitud con el `id` a actualizar y los nuevos datos.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @returns {Promise<Response>} Reserva actualizada o error 404/400.
  */
 const findOneAndUpdate = async (req, res) => {
   try {
@@ -58,28 +99,43 @@ const findOneAndUpdate = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
+
     if (!updatedBooking) {
       return res.status(404).json({ message: 'Reserva no encontrada para actualizar' });
     }
-    res.status(200).json(updatedBooking);
+
+    return res.status(200).json(updatedBooking);
   } catch (error) {
-    res.status(400).json({ message: 'Error al actualizar la reserva', error: error.message });
+    return res.status(400).json({
+      message: 'Error al actualizar la reserva',
+      error: error.message
+    });
   }
 };
 
 /**
+ * Elimina una reserva existente por su ID.
+ *
+ * @async
  * @function findOneAndDelete
- * @description Busca una reserva por su ID y la elimina de la base de datos.
+ * @param {Request} req - Solicitud con el `id` de la reserva a eliminar.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @returns {Promise<Response>} Confirmación de eliminación o error 404/500.
  */
 const findOneAndDelete = async (req, res) => {
   try {
     const deletedBooking = await Booking.findByIdAndDelete(req.params.id);
+
     if (!deletedBooking) {
       return res.status(404).json({ message: 'Reserva no encontrada para eliminar' });
     }
-    res.status(200).json({ message: 'Reserva eliminada exitosamente' });
+
+    return res.status(200).json({ message: 'Reserva eliminada exitosamente' });
   } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar la reserva', error: error.message });
+    return res.status(500).json({
+      message: 'Error al eliminar la reserva',
+      error: error.message
+    });
   }
 };
 
