@@ -11,10 +11,16 @@ Antes de tocar codigo, lee y respeta:
 LuxArs es un marketplace fotografico del Valle de Aburra (SPA con estetica Swiss Design).
 
 - **Backend**: Node/Express (`server.js`). Sirve la SPA estatica de `public/` y
-  en cada arranque inyecta `SUPABASE_URL` / `SUPABASE_ANON_KEY` desde el `.env`.
-  Cualquier ruta responde con `index.html` (navegacion por History API).
+  expone una API REST (`/api/auth`, `/api/photographers`, `/api/bookings`).
+  En cada arranque inyecta `SUPABASE_URL` / `SUPABASE_ANON_KEY` desde el `.env`.
+  Cualquier ruta no-API responde con `index.html` (navegacion por History API).
+- **Controladores API**: `controllers/authController.js`, `controllers/photographersController.js`,
+  `controllers/bookingsController.js`, montados desde `routes/`. Datos en `data/`
+  (`photographers.js` con los 16 fotografos, `bookings.js` con reservas en memoria).
+  Auth en `middleware/auth.js` (valida JWT de Supabase o header `x-demo-user` en modo demo).
 - **Frontend**: SPA en `public/` (`index.html`, `css/styles.css`, `js/script.js`).
   Todo el CSS y el JS viven en esos 2 unicos archivos. No crear archivos sueltos.
+  Los fotografos se cargan desde `/api/photographers` (`loadPhotographers`).
 - **Auth y storage**: Supabase (cliente via CDN). Sin `.env` la app corre en
   "modo demo" con usuarios de prueba: `admin@luxars.com/admin123` y `foto@luxars.com/foto123`.
 
@@ -24,7 +30,8 @@ LuxArs es un marketplace fotografico del Valle de Aburra (SPA con estetica Swiss
 
 ## Controladores clave (`public/js/script.js`)
 
-- Render de cards: `createCard` / `renderGrid` / `initBlobButtons` (~266)
+- Carga de fotografos: `loadPhotographers()` (fetch a `/api/photographers`) (~5)
+- Render de cards: `createCard` / `renderGrid` / `initBlobButtons` (~17)
 - Navegacion SPA: `navigateTo` / `scrollToSection` + History API (~358)
 - Catalogo / filtros: `applyFilters` / `clearFilters` (~522)
 - Reservas: `initBookingSystem` / `handleBookingSubmit` / `showPaymentStep` /

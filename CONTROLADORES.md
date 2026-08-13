@@ -32,23 +32,36 @@ npm start            # abre la app en http://localhost:3000
 |-----------------|---------|
 | Servir la SPA | `express.static` sirve `public/` (index.html, css, js) |
 | Ruta SPA | Cualquier ruta responde con `index.html` (navegacion por History API) |
+| API REST | Monta `/api/auth`, `/api/photographers` y `/api/bookings` |
 | Configuracion | Inyecta `SUPABASE_URL` y `SUPABASE_ANON_KEY` desde variables de entorno |
 | Puerto | `process.env.PORT` o 3000 |
 
-### 2.2 Frontend - `public/js/script.js`
+### 2.2 Controladores de la API
+
+| Controlador | Archivo | Endpoints | Responsabilidad |
+|-------------|---------|-----------|-----------------|
+| Auth | `controllers/authController.js` | `GET/PUT /api/auth/profile` | Perfil del usuario logueado (Supabase o modo demo) |
+| Photographers | `controllers/photographersController.js` | `GET /api/photographers`, `GET /api/photographers/:id` | Catalogo con filtros por especialidad y precio |
+| Bookings | `controllers/bookingsController.js` | `POST /api/bookings`, `GET /api/bookings/mine`, `POST /api/bookings/:id/cancel` | Reservas: creacion con validaciones, listado propio y cancelacion |
+
+- Datos: `data/photographers.js` (16 fotografos) y `data/bookings.js` (reservas en memoria).
+- Auth: `middleware/auth.js` valida JWT de Supabase o el header `x-demo-user` (modo demo).
+- Los endpoints de reservas requieren sesion (401 si no).
+
+### 2.3 Frontend - `public/js/script.js`
 
 | Modulo | Funciones | Lineas | Responsabilidad |
 |--------|-----------|--------|-----------------|
-| Datos demo | `photographers` | 6 | Lista de 16 fotografos con perfil, portafolio y precio |
-| Render de cards | `createCard`, `renderGrid`, `initBlobButtons` | 266-321 | Pinta las tarjetas de fotografos en grillas |
-| Navegacion SPA | `navigateTo`, `scrollToSection`, `hasAccess`, modales de acceso | 324-498 | Cambio de paginas, historial, acceso por rol |
-| Catalogo | `applyFilters`, `clearFilters` | 522-560 | Filtros por especialidad y precio |
-| Perfil | handler de cards y `backToCatalog` | 563-628 | Vista detalle del fotografo |
-| Reservas | `initBookingSystem`, `selectPhotographer`, `handleBookingSubmit`, `showPaymentStep`, `handleConfirmPayment`, `renderMyReservations` | 699-1156 | DatePicker/TimePicker, validaciones, pago simulado y cancelacion |
-| Alertas | `luxAlert`, `closeLuxAlert` | 1157-1201 | Modal de avisos personalizado |
-| Sesion / Auth | `saveSession`, `fetchProfile`, `applyProfile`, `restoreSession`, `logoutSession`, `updateNavbarUI`, handlers de login/register | 1203-1343 y 1739-1898 | Autenticacion con Supabase (o modo demo) |
-| Portafolio / Upload | `initUploadSystem`, `handleFileSelect`, `openUploadModal`, `handleUploadSubmit`, `supabaseUpload`, `loadPortfolio` | 1344-1674 | Subida de imagenes/videos a Supabase Storage |
-| Utilidades | `animateCounters`, back-to-top, carousel | 1689-1736 | Contadores animados y helpers visuales |
+| Datos | `photographers` + `loadPhotographers()` | 5-14 | Carga los 16 fotografos desde `/api/photographers` |
+| Render de cards | `createCard`, `renderGrid`, `initBlobButtons` | 17-72 | Pinta las tarjetas de fotografos en grillas |
+| Navegacion SPA | `navigateTo`, `scrollToSection`, `hasAccess`, modales de acceso | 75-249 | Cambio de paginas, historial, acceso por rol |
+| Catalogo | `applyFilters`, `clearFilters` | 273-311 | Filtros por especialidad y precio |
+| Perfil | handler de cards y `backToCatalog` | 314-379 | Vista detalle del fotografo |
+| Reservas | `initBookingSystem`, `selectPhotographer`, `handleBookingSubmit`, `showPaymentStep`, `handleConfirmPayment`, `renderMyReservations` | 450-907 | DatePicker/TimePicker, validaciones, pago simulado y cancelacion |
+| Alertas | `luxAlert`, `closeLuxAlert` | 908-952 | Modal de avisos personalizado |
+| Sesion / Auth | `saveSession`, `fetchProfile`, `applyProfile`, `restoreSession`, `logoutSession`, `updateNavbarUI`, handlers de login/register | 954-1094 y 1490-1649 | Autenticacion con Supabase (o modo demo) |
+| Portafolio / Upload | `initUploadSystem`, `handleFileSelect`, `openUploadModal`, `handleUploadSubmit`, `supabaseUpload`, `loadPortfolio` | 1095-1424 | Subida de imagenes/videos a Supabase Storage |
+| Utilidades | `animateCounters`, back-to-top, carousel | 1440-1489 | Contadores animados y helpers visuales |
 
 > Regla del proyecto: TODO el JS vive en `public/js/script.js` y TODO el CSS en
 > `public/css/styles.css`. No crear archivos sueltos por cada uno.
