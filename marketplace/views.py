@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
-from .models import Usuarios, PerfilesFotografos, Categorias, PortafoliosGalerias
+from .models import Usuarios, Roles, PerfilesFotografos, Categorias, PortafoliosGalerias
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / 'public'
@@ -121,8 +121,87 @@ def photographers_detail(request, perfil_id):
 
 
 # ---------------------------------------------------------------
-# API /api/auth/profile (replica controllers/authController.js)
+# API /api/auth (replica controllers/authController.js)
 # ---------------------------------------------------------------
+def _user_payload(usuario):
+    role_name = usuario.rol.nombre_rol if usuario.rol else 'client'
+    return {
+        'id': str(usuario.usuario_id),
+        'email': usuario.email,
+        'name': f"{usuario.nombre} {usuario.apellido}".strip(),
+        'role': role_name,
+        'avatar': f"https://i.pravatar.cc/100?u={usuario.usuario_id}",
+        'created_at': usuario.fecha_registro.isoformat() if usuario.fecha_registro else None,
+    }
+
+
+def _check_password(usuario, password):
+    h = (usuario.password_hash or '')
+    if h.startswith('plain:'):
+        return h[len('plain:'):] == password
+    # Hashes demo historicos del seed anterior
+    demo = {
+        'admin@luxars.com': 'admin123',
+        'foto@luxars.com': 'foto123',
+        'cliente@luxars.com': 'cliente123',
+    }
+    return demo.get(usuario.email) == password
+
+
+@require_POST
+@csrf_exempt
+def auth_login(request):
+    import json
+    try:
+        body = json.loads(request.body or b'{}')
+    except json.JSONDecodeError:
+        body = {}
+
+    email = str(body.get('email', '')).strip()
+    password = str(body.get('password', ''))
+
+    usuario = Usuarios.objects.filter(email__iexact=email).first()
+    if not usuario or not _check_password(usuario, password):
+        return JsonResponse({'error': 'Las credenciales no corresponden a ningún usuario registrado.'}, status=401)
+    return JsonResponse({'user': _user_payload(usuario)})
+
+
+@require_POST
+@csrf_exempt
+def auth_register(request):
+    import json
+    try:
+        body = json.loads(request.body or b'{}')
+    except json.JSONDecodeError:
+        body = {}
+
+    email = str(body.get('email', '')).strip()
+    password = str(body.get('password', ''))
+    name = str(body.get('name', '')).strip()
+    role = str(body.get('role', 'client')).strip()
+
+    if not email or not password or not name:
+        return JsonResponse({'error': 'Nombre, correo y contraseña son obligatorios.'}, status=400)
+
+    if Usuarios.objects.filter(email__iexact=email).exists():
+        return JsonResponse({'error': 'Ya existe una cuenta con este correo.'}, status=409)
+
+    try:
+        rol = Roles.objects.get(nombre_rol=role)
+    except Roles.DoesNotExist:
+        rol = Roles.objects.filter(nombre_rol='client').first()
+
+    partes = name.split(' ', 1)
+    usuario = Usuarios.objects.create(
+        nombre=partes[0],
+        apellido=partes[1] if len(partes) > 1 else '',
+        email=email,
+        password_hash='plain:' + password,
+        rol=rol,
+    )
+    return JsonResponse({'user': _user_payload(usuario)}, status=201)
+
+
 @require_http_methods(['GET', 'PUT'])
 @csrf_exempt
 def auth_profile(request):
@@ -131,15 +210,7 @@ def auth_profile(request):
     if not usuario:
         return JsonResponse({'user': None, 'supabase': False})
 
-    role_name = usuario.rol.nombre_rol if usuario.rol else 'client'
-    payload = {
-        'id': str(usuario.usuario_id),
-        'email': usuario.email,
-        'name': f"{usuario.nombre} {usuario.apellido}".strip(),
-        'role': role_name,
-        'avatar': None,
-        'created_at': usuario.fecha_registro.isoformat() if usuario.fecha_registro else None,
-    }
+    payload = _user_payload(usuario)
     if request.method == 'PUT':
         import json
         try:

@@ -274,6 +274,7 @@ async function loadPhotographers() {
       const data = await res.json();
       if (Array.isArray(data) && data.length) {
         photographers = data;
+        usingBackend = true;
         return;
       }
     }
@@ -281,6 +282,23 @@ async function loadPhotographers() {
     console.error('[LuxArs] No se pudieron cargar los fotografos', err);
   }
   photographers = FALLBACK_PHOTOGRAPHERS;
+}
+
+// Detecta si existe un backend real (Django) detras de la SPA.
+// El fallback estatico (GitHub Pages) responde index.html (HTML), no JSON.
+let usingBackend = false;
+async function detectBackend() {
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    const ct = (res.headers.get('content-type') || '').toLowerCase();
+    if (ct.includes('application/json')) usingBackend = true;
+  } catch {
+    usingBackend = false;
+  }
 }
 
 // ----- Render helpers -----
@@ -1283,7 +1301,26 @@ async function restoreSession() {
     if (raw) {
       try {
         const user = JSON.parse(raw);
-        const valid = APP_USERS.find(u => u.email === user.email);
+        let valid = APP_USERS.find(u => u.email === user.email);
+
+        // Backend Django: valida contra la tabla usuarios de SQLite
+        if (!valid && usingBackend) {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, password: user.pass || '' })
+          });
+          const data = await res.json().catch(() => null);
+          if (res.status === 200 && data && data.user) {
+            valid = {
+              email: data.user.email,
+              pass: user.pass || '',
+              role: data.user.role,
+              name: data.user.name,
+              avatar: data.user.avatar || 'https://i.pravatar.cc/100?img=1'
+            };
+          }
+        }
         if (valid) {
           currentUser = valid;
           updateNavbarUI();
@@ -1691,6 +1728,8 @@ async function loadPortfolio() {
   });
 }
 async function initApp() {
+  await detectBackend();
+  await restoreSession();
   await loadPhotographers();
   renderGrid('featuredGrid', photographers.slice(0, 3));
   renderGrid('catalogGrid', photographers);
@@ -1766,7 +1805,6 @@ function animateCounters() {
 })();
 
 // ----- Session UI Events -----
-restoreSession();
 
 document.getElementById('userBadgeBtn').addEventListener('click', function (e) {
   e.stopPropagation();
@@ -1805,8 +1843,41 @@ document.querySelector('#page-auth #auth-login form').addEventListener('submit',
   const pass = this.querySelector('input[type="password"]').value.trim();
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ingresando'; }
 
-  // Modo demo
+  // Modo demo (sin Supabase)
   if (!supabaseClient) {
+    if (usingBackend) {
+      // Backend Django real: valida contra la tabla usuarios de SQLite
+      let data, status;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pass })
+        });
+        status = res.status;
+        data = await res.json();
+      } catch (err) {
+        data = { error: 'El servidor no respondió. Intenta de nuevo.' };
+        status = 500;
+      }
+      if (status === 200 && data.user) {
+        const sessionUser = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+          role: data.user.role,
+          avatar: data.user.avatar || 'https://i.pravatar.cc/100?img=1',
+          pass
+        };
+        saveSession(sessionUser);
+        document.querySelector('[data-page="home"]')?.click();
+      } else {
+        luxAlert(data.error || 'Las credenciales no corresponden a ningún usuario registrado. Verifica tu correo y contraseña.', { title: 'Acceso denegado' });
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Ingresar'; }
+      return;
+    }
+
     const user = APP_USERS.find(u => u.email === email && u.pass === pass);
     if (user) {
       saveSession(user);
@@ -1876,6 +1947,31 @@ document.querySelector('#page-auth #auth-register form').addEventListener('submi
 
   // Modo demo
   if (!supabaseClient) {
+    if (usingBackend) {
+      // Backend Django real: inserta el usuario en la tabla usuarios de SQLite
+      let data, status;
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password: pass, role })
+        });
+        status = res.status;
+        data = await res.json();
+      } catch (err) {
+        data = { error: 'El servidor no respondió. Intenta de nuevo.' };
+        status = 500;
+      }
+      if (status === 201 && data.user) {
+        luxAlert('Cuenta creada. Ahora inicia sesión.', { type: 'success', title: 'Cuenta creada' });
+        document.querySelector('.auth-tab[data-tab="login"]').click();
+      } else {
+        luxAlert(data.error || 'No se pudo crear la cuenta.', { title: status === 409 ? 'Correo en uso' : 'No se pudo crear la cuenta' });
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-check"></i> Crear cuenta'; }
+      return;
+    }
+
     if (APP_USERS.some(u => u.email === email)) {
       luxAlert('Ya existe una cuenta con este correo. Inicia sesión.', { title: 'Correo en uso' });
     } else {
