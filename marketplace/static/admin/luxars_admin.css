@@ -1,0 +1,102 @@
+/* ============================================================
+   LuxArs Admin Theme — Swiss Design (negro + rojo)
+   Sobreescribe las variables CSS del admin de Django.
+   ============================================================ */
+
+:root {
+    --primary: #FF0000;
+    --secondary: #CC0000;
+    --accent: #FF0000;
+    --primary-fg: #fff;
+
+    --body-fg: #d9d9d9;
+    --body-bg: #0a0a0a;
+    --body-quiet-color: #A0A0A0;
+    --body-medium-color: #cfcfcf;
+    --body-loud-color: #fff;
+
+    --header-color: #fff;
+    --header-branding-color: #FF0000;
+    --header-bg: #121212;
+    --header-link-color: #FF0000;
+
+    --breadcrumbs-fg: #A0A0A0;
+    --breadcrumbs-link-fg: #FF0000;
+    --breadcrumbs-bg: #1E1E1E;
+
+    --link-fg: #FF0000;
+    --link-hover-color: #fff;
+    --link-selected-fg: #FF0000;
+
+    --hairline-color: #252525;
+    --border-color: #333333;
+
+    --error-fg: #ff5a5a;
+
+    --message-debug-bg: #1E1E1E;
+    --message-info-bg: #1E1E1E;
+    --message-success-bg: #123322;
+    --message-success-icon: url(../img/icon-yes.svg);
+    --message-warning-bg: #332a12;
+    --message-error-bg: #331212;
+
+    --darkened-bg: #121212;
+    --selected-bg: #1E1E1E;
+    --selected-row: #2a0f0f;
+    --button-bg: #FF0000;
+    --button-hover-bg: #CC0000;
+}
+
+/* Fondo general y tarjetas de modulos */
+body {
+    background: #0a0a0a;
+}
+
+.module h2, .module caption {
+    background: #CC0000;
+    color: #fff;
+}
+
+/* Encabezado superior */
+#header {
+    background: #121212;
+    border-bottom: 3px solid #FF0000;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* Tablas del changelist */
+#changelist table tbody tr.selected {
+    background: #2a0f0f;
+}
+
+/* Botones */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #FF0000;
+    color: #fff;
+    font-weight: 600;
+}
+.button:hover, input[type=submit]:hover, a.button:hover {
+    background: #CC0000;
+}
+.button.default, input[type=submit].default {
+    background: #FF0000;
+    border-color: #CC0000;
+}
+.button.default:hover, input[type=submit].default:hover {
+    background: #CC0000;
+}
+
+/* Enlaces genericos */
+a:link, a:visited {
+    color: #FF0000;
+}
+
+/* Login: fondo acorde a la marca */
+.login #content {
+    background: #0a0a0a;
+}
