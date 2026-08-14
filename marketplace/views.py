@@ -6,7 +6,10 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
-from .models import Usuarios, Roles, PerfilesFotografos, Categorias, PortafoliosGalerias
+from usuarios.models import Usuarios, Roles
+from perfiles.models import PerfilesFotografos
+from categorias.models import Categorias
+from portafolios.models import PortafoliosGalerias
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / 'public'
@@ -233,7 +236,7 @@ def auth_profile(request):
 @require_http_methods(['GET', 'POST'])
 @csrf_exempt
 def bookings_mine(request):
-    from .models import ReservasPedidos
+    from reservas.models import ReservasPedidos
     email = request.headers.get('X-Demo-User') or ''
     usuario = Usuarios.objects.filter(email__iexact=email).first()
     if not usuario:
@@ -255,7 +258,7 @@ def bookings_mine(request):
         except (ValueError, TypeError):
             return JsonResponse({'error': 'Fecha invalida. Usa el formato AAAA-MM-DD.'}, status=400)
         item = Usuarios.objects.get(perfil__perfil_id=perfil.perfil_id).servicios.first() or None
-        from .models import ServiciosProductos
+        from servicios.models import ServiciosProductos
         item = item or ServiciosProductos.objects.create(
             fotografo=fotografo,
             nombre_item='Sesion ' + (perfil.especialidad or ''),
@@ -303,7 +306,7 @@ def bookings_mine(request):
 @csrf_exempt
 @require_POST
 def bookings_cancel(request, pedido_id):
-    from .models import ReservasPedidos
+    from reservas.models import ReservasPedidos
     email = request.headers.get('X-Demo-User') or ''
     usuario = Usuarios.objects.filter(email__iexact=email).first()
     if not usuario:

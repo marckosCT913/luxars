@@ -4,13 +4,11 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from marketplace.models import (
-    Roles,
-    Usuarios,
-    PerfilesFotografos,
-    Categorias,
-    PortafoliosGalerias,
-)
+from roles.models import Roles
+from usuarios.models import Usuarios
+from perfiles.models import PerfilesFotografos
+from categorias.models import Categorias
+from portafolios.models import PortafoliosGalerias
 
 
 class Command(BaseCommand):

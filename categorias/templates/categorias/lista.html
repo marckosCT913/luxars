@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Categorías | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'categorias:lista' %}">Inicio</a> / Categorías</div>
+  <h1>Categorías <span class="red"></span></h1>
+  <div class="sub">{{ categorias|length }} categorías temáticas</div>
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Obras</th></tr></thead>
+    <tbody>
+      {% for c in categorias %}
+        <tr>
+          <td>{{ c.categoria_id }}</td>
+          <td>{{ c.nombre_categoria }}</td>
+          <td>{{ c.descripcion|default:'—' }}</td>
+          <td>{{ c.galerias.count }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

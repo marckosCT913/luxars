@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Perfiles de Fotógrafos | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'perfiles:lista' %}">Inicio</a> / Perfiles de Fotógrafos</div>
+  <h1>Perfiles de <span class="red">Fotógrafos</span></h1>
+  <div class="sub">{{ perfiles|length }} fotógrafos registrados</div>
+
+  <form method="get" style="margin-bottom: 20px;">
+    <select name="especialidad" onchange="this.form.submit()">
+      <option value="">Todas las especialidades</option>
+      {% for esp in especialidades %}
+        <option value="{{ esp }}" {% if esp == especialidad %}selected{% endif %}>{{ esp }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn">Filtrar</button>
+  </form>
+
+  {% if perfiles %}
+    <div class="grid">
+      {% for p in perfiles %}
+        <div class="item">
+          <h3><a href="{% url 'perfiles:detalle' p.perfil_id %}">{{ p.nombre_completo }}</a></h3>
+          <p>{{ p.biografia|truncatewords:20 }}</p>
+          <span class="tag">{{ p.especialidad }}</span>
+          <div>
+            <span class="meta">Tarifa: ${{ p.tarifa_base }} COP · {{ p.galerias.count }} obras</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">No hay fotógrafos registrados.</div>
+  {% endif %}
+{% endblock %}

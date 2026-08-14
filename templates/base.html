@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LuxArs Admin{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0a; --panel: #121212; --panel2: #1E1E1E;
+      --red: #FF0000; --red2: #CC0000; --text: #e5e5e5; --muted: #A0A0A0;
+      --border: #252525;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #050505 0%, #121212 40%, #0d0808 70%, #0a0a0a 100%);
+      color: var(--text); min-height: 100vh; line-height: 1.6;
+    }
+    header {
+      background: #121212; border-bottom: 3px solid var(--red);
+      padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .brand { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-decoration: none; }
+    .brand span { color: var(--red); }
+    nav.modulos { display: flex; flex-wrap: wrap; gap: 6px; }
+    nav.modulos a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600;
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: 4px; transition: all .2s;
+    }
+    nav.modulos a:hover, nav.modulos a.active { color: #fff; border-color: var(--red); background: rgba(255,0,0,.08); }
+    main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+    .crumb { color: var(--muted); font-size: .85rem; margin-bottom: 16px; }
+    .crumb a { color: var(--red); text-decoration: none; }
+    h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    h1 .red { color: var(--red); }
+    .sub { color: var(--muted); margin-bottom: 24px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 20px; }
+    .item { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; transition: transform .2s, border-color .2s; }
+    .item:hover { transform: translateY(-2px); border-color: var(--red); }
+    .item h3 { font-size: 1rem; margin-bottom: 4px; }
+    .item h3 a { color: #fff; text-decoration: none; }
+    .item h3 a:hover { color: var(--red); }
+    .item p { color: var(--muted); font-size: .85rem; }
+    .tag { display: inline-block; background: rgba(255,0,0,.12); color: var(--red); font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-top: 6px; }
+    .muted { color: var(--muted); }
+    .btn { display: inline-block; background: var(--red); color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; font-size: .85rem; border: none; cursor: pointer; }
+    .btn:hover { background: var(--red2); }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 20px; }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: .9rem; }
+    th { background: var(--panel2); color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: none; }
+    .empty { color: var(--muted); padding: 32px; text-align: center; }
+    .meta { font-size: .8rem; color: var(--muted); }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header>
+    <a class="brand" href="{% url 'roles:lista' %}">LuxArs <span>Admin</span></a>
+    <nav class="modulos">
+      <a href="{% url 'roles:lista' %}"><i class="fas fa-user-shield"></i> Roles</a>
+      <a href="{% url 'usuarios:lista' %}"><i class="fas fa-users"></i> Usuarios</a>
+      <a href="{% url 'perfiles:lista' %}"><i class="fas fa-camera"></i> Perfiles</a>
+      <a href="{% url 'categorias:lista' %}"><i class="fas fa-tags"></i> Categorías</a>
+      <a href="{% url 'portafolios:lista' %}"><i class="fas fa-images"></i> Portafolios</a>
+      <a href="{% url 'servicios:lista' %}"><i class="fas fa-box"></i> Servicios</a>
+      <a href="{% url 'reservas:lista' %}"><i class="fas fa-calendar-check"></i> Reservas</a>
+      <a href="{% url 'pagos:lista' %}"><i class="fas fa-credit-card"></i> Pagos</a>
+      <a href="{% url 'resenas:lista' %}"><i class="fas fa-star"></i> Reseñas</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

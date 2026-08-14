@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Portafolios | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'portafolios:lista' %}">Inicio</a> / Portafolios</div>
+  <h1>Portafolios <span class="red">Galerías</span></h1>
+  <div class="sub">{{ obras|length }} obras publicadas</div>
+  <table>
+    <thead><tr><th>ID</th><th>Título</th><th>Fotógrafo</th><th>Categoría</th><th>Subida</th></tr></thead>
+    <tbody>
+      {% for o in obras %}
+        <tr>
+          <td>{{ o.galeria_id }}</td>
+          <td><a href="{% url 'perfiles:detalle' o.fotografo.perfil_id %}" style="color:#FF0000;">{{ o.titulo_obra }}</a></td>
+          <td>{{ o.fotografo.nombre_completo }}</td>
+          <td><span class="tag">{{ o.categoria.nombre_categoria }}</span></td>
+          <td>{{ o.fecha_subida|date:'d/m/Y H:i' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

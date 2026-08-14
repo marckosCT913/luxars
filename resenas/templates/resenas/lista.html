@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Reseñas | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'resenas:lista' %}">Inicio</a> / Reseñas</div>
+  <h1>Reseñas <span class="red"></span></h1>
+  <div class="sub">{{ reseñas|length }} reseñas publicadas</div>
+  <table>
+    <thead><tr><th>ID</th><th>Fotógrafo</th><th>Cliente</th><th>Calificación</th><th>Comentario</th><th>Fecha</th></tr></thead>
+    <tbody>
+      {% for r in reseñas %}
+        <tr>
+          <td>{{ r.reseña_id }}</td>
+          <td>{{ r.fotografo.nombre_completo }}</td>
+          <td>{{ r.cliente.nombre_completo }}</td>
+          <td>{{ r.calificacion }}/5</td>
+          <td>{{ r.comentario|default:'—' }}</td>
+          <td>{{ r.fecha_reseña|date:'d/m/Y' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

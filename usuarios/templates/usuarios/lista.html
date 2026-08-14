@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Usuarios | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'usuarios:lista' %}">Inicio</a> / Usuarios</div>
+  <h1>Usuarios <span class="red"></span></h1>
+  <div class="sub">{{ usuarios|length }} usuarios registrados</div>
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Teléfono</th><th>Registro</th></tr></thead>
+    <tbody>
+      {% for u in usuarios %}
+        <tr>
+          <td>{{ u.usuario_id }}</td>
+          <td>{{ u.nombre_completo }}</td>
+          <td>{{ u.email }}</td>
+          <td><span class="tag">{{ u.rol.nombre_rol }}</span></td>
+          <td>{{ u.telefono|default:'—' }}</td>
+          <td>{{ u.fecha_registro|date:'d/m/Y H:i' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

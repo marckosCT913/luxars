@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Pagos | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'pagos:lista' %}">Inicio</a> / Pagos</div>
+  <h1>Pagos <span class="red"></span></h1>
+  <div class="sub">{{ pagos|length }} pagos registrados</div>
+  <table>
+    <thead><tr><th>ID</th><th>Pedido</th><th>Método</th><th>Monto</th><th>Comisión</th><th>Estado</th><th>Fecha</th></tr></thead>
+    <tbody>
+      {% for p in pagos %}
+        <tr>
+          <td>{{ p.pago_id }}</td>
+          <td>{{ p.pedido.pedido_id }}</td>
+          <td>{{ p.metodo_pago }}</td>
+          <td>${{ p.monto_pagado }}</td>
+          <td>${{ p.comision_plataforma }}</td>
+          <td><span class="tag">{{ p.estado_pago }}</span></td>
+          <td>{{ p.fecha_pago|date:'d/m/Y H:i' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

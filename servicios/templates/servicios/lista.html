@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Servicios | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'servicios:lista' %}">Inicio</a> / Servicios</div>
+  <h1>Servicios y <span class="red">Productos</span></h1>
+  <div class="sub">{{ items|length }} ítems ofertados</div>
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Fotógrafo</th><th>Tipo</th><th>Precio</th><th>Stock</th></tr></thead>
+    <tbody>
+      {% for i in items %}
+        <tr>
+          <td>{{ i.item_id }}</td>
+          <td>{{ i.nombre_item }}</td>
+          <td>{{ i.fotografo.nombre_completo }}</td>
+          <td><span class="tag">{{ i.tipo_item }}</span></td>
+          <td>${{ i.precio }}</td>
+          <td>{{ i.stock }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -16,8 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Modulos del dominio (navegacion entre apps)
+    path('roles/', include('roles.urls')),
+    path('usuarios/', include('usuarios.urls')),
+    path('perfiles/', include('perfiles.urls')),
+    path('categorias/', include('categorias.urls')),
+    path('portafolios/', include('portafolios.urls')),
+    path('servicios/', include('servicios.urls')),
+    path('reservas/', include('reservas.urls')),
+    path('pagos/', include('pagos.urls')),
+    path('resenas/', include('resenas.urls')),
+    path('modulos/', RedirectView.as_view(pattern_name='roles:lista', permanent=False), name='modulos-home'),
+
+    # API de la SPA (debe ir despues de los modulos para no taparlos)
     path('', include('marketplace.urls')),
 ]

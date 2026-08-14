@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ perfil.nombre_completo }} | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb">
+    <a href="{% url 'perfiles:lista' %}">Perfiles de Fotógrafos</a> / {{ perfil.nombre_completo }}
+  </div>
+
+  <h1>{{ perfil.nombre_completo }} <span class="red">({{ perfil.especialidad }})</span></h1>
+  <div class="sub">
+    <i class="fas fa-map-marker-alt"></i> {{ perfil.usuario.direccion|default:'Valle de Aburrá' }} ·
+    <i class="fas fa-credit-card"></i> Tarifa base: ${{ perfil.tarifa_base }} COP
+  </div>
+
+  <div class="card" style="margin-bottom: 24px;">
+    <h3><i class="fas fa-user"></i> Datos del usuario</h3>
+    <p class="muted">Email: {{ perfil.usuario.email }}</p>
+    <p class="muted">Teléfono: {{ perfil.usuario.telefono|default:'—' }}</p>
+    <p class="muted">Dirección: {{ perfil.usuario.direccion|default:'—' }}</p>
+    <p class="muted">Registro: {{ perfil.usuario.fecha_registro|date:'d/m/Y H:i' }}</p>
+    <p style="margin-top: 12px;">{{ perfil.biografia }}</p>
+    {% if perfil.enlace_portafolio %}<p class="muted">Enlace: {{ perfil.enlace_portafolio }}</p>{% endif %}
+  </div>
+
+  <h2>Galería <span class="red">({{ obras|length }})</span></h2>
+  {% if obras %}
+    <div class="grid">
+      {% for obra in obras %}
+        <div class="item">
+          <h3>{{ obra.titulo_obra }}</h3>
+          <p>{{ obra.descripcion|truncatewords:15 }}</p>
+          <span class="tag">{{ obra.categoria.nombre_categoria }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">Este fotógrafo aún no tiene obras publicadas.</div>
+  {% endif %}
+
+  <h2 style="margin-top: 32px;">Reseñas <span class="red">({{ reseñas|length }})</span></h2>
+  {% if reseñas %}
+    <div class="grid">
+      {% for r in reseñas %}
+        <div class="item">
+          <h3>{{ r.cliente.nombre_completo }} · {{ r.calificacion }}/5</h3>
+          <p>{{ r.comentario|default:'—' }}</p>
+          <span class="meta">{{ r.fecha_reseña|date:'d/m/Y' }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">Sin reseñas todavía.</div>
+  {% endif %}
+{% endblock %}

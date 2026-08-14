@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Reservas | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'reservas:lista' %}">Inicio</a> / Reservas</div>
+  <h1>Reservas y <span class="red">Pedidos</span></h1>
+  <div class="sub">{{ pedidos|length }} pedidos registrados</div>
+  <table>
+    <thead><tr><th>ID</th><th>Cliente</th><th>Fotógrafo</th><th>Ítem</th><th>Sesión</th><th>Total</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for p in pedidos %}
+        <tr>
+          <td>{{ p.pedido_id }}</td>
+          <td>{{ p.cliente.nombre_completo }}</td>
+          <td>{{ p.fotografo.nombre_completo }}</td>
+          <td>{{ p.item.nombre_item }}</td>
+          <td>{{ p.fecha_sesion_reservada|date:'d/m/Y H:i' }}</td>
+          <td>${{ p.total_pedido }}</td>
+          <td><span class="tag">{{ p.estado_pedido }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

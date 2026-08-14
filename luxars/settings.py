@@ -32,6 +32,15 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'marketplace',
+    'roles',
+    'usuarios',
+    'perfiles',
+    'categorias',
+    'portafolios',
+    'servicios',
+    'reservas',
+    'pagos',
+    'resenas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,7 +64,7 @@ ROOT_URLCONF = 'luxars.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

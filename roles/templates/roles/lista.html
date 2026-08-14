@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Roles | LuxArs Admin{% endblock %}
+{% block content %}
+  <div class="crumb"><a href="{% url 'roles:lista' %}">Inicio</a> / Roles</div>
+  <h1>Roles <span class="red"></span></h1>
+  <div class="sub">{{ roles|length }} roles definidos</div>
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Usuarios</th></tr></thead>
+    <tbody>
+      {% for r in roles %}
+        <tr>
+          <td>{{ r.rol_id }}</td>
+          <td>{{ r.nombre_rol }}</td>
+          <td>{{ r.descripcion|default:'—' }}</td>
+          <td>{{ r.usuarios.count }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
