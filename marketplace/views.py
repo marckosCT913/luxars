@@ -46,7 +46,10 @@ def spa(request, path=''):
             '.woff': 'font/woff',
             '.woff2': 'font/woff2',
         }.get(requested.suffix.lower(), 'application/octet-stream')
-        return HttpResponse(requested.read_bytes(), content_type=content_type)
+        response = HttpResponse(requested.read_bytes(), content_type=content_type)
+        if requested.suffix.lower() in ('.html', '.js', '.css'):
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
 
     index = (PUBLIC_DIR / 'index.html').read_text(encoding='utf-8')
     for key, value in _SUPABASE_PLACEHOLDERS.items():
