@@ -11,3 +11,12 @@ npm-debug.log*
 
 # OS
 .DS_Store
+
+# Python / Django
+__pycache__/
+*.py[cod]
+db.sqlite3
+staticfiles/
+venv/
+.venv/
+
