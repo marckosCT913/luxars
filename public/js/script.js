@@ -607,56 +607,12 @@ document.addEventListener('click', e => {
     return;
   }
 
-  // Any click on the card opens the profile (except .card__actions buttons)
-  if (e.target.closest('.card__actions')) return;
+  // Any click on the card or the "Ver perfil" button opens the Django profile URL
+  if (e.target.closest('.card__actions') && !e.target.closest('.view-profile')) return;
 
   const id = parseInt(card.dataset.id);
-  const p = photographers.find(x => x.id === id);
-  if (!p) return;
-
-  const gallery = p.portfolio.map(url =>
-    `<img src="${url}" alt="Portfolio" />`
-  ).join('');
-
-  document.getElementById('profileContent').innerHTML = `
-    <div class="glass-card profile-header">
-      <img class="avatar" src="${p.avatar}" alt="${p.name}" />
-      <div class="info">
-        <h1>${p.name}</h1>
-        <div class="meta">
-          <span><i class="fas fa-camera"></i> ${p.specialty}</span>
-          <span><i class="fas fa-map-marker-alt"></i> ${p.location}</span>
-          <span><i class="fas fa-briefcase"></i> ${p.experience}</span>
-          <span><i class="fas fa-star" style="color:#FF0000"></i> ${p.rating}</span>
-        </div>
-        <p style="color:var(--text-secondary);margin-top:8px;">${p.bio}</p>
-      </div>
-    </div>
-    <div class="glass-card">
-      <h3 style="margin-bottom:16px;"><i class="fas fa-images"></i> Portafolio</h3>
-      <div class="profile-gallery">${gallery}</div>
-    </div>
-    <div class="glass-card profile-details">
-      <div>
-        <h3>Detalles del servicio</h3>
-        <div class="detail-item"><h4>Precio desde</h4><p style="font-size:1.4rem;font-weight:700;color:#FF0000;">$${p.price}.000 COP</p></div>
-        <div class="detail-item"><h4>Tiempo de entrega</h4><p>${p.deliveries}</p></div>
-        <div class="detail-item"><h4>Ubicación</h4><p>${p.location}, Valle de Aburrá</p></div>
-      </div>
-      <div>
-        <h3>Disponibilidad</h3>
-        <div class="detail-item">
-          <p style="color:var(--text-secondary);margin-bottom:12px;">Selecciona una fecha para verificar disponibilidad:</p>
-          <input type="date" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-primary);outline:none;" />
-          <button class="btn btn-primary" style="margin-top:12px;width:100%;justify-content:center;" onclick="navigateTo('dashboard')">
-            <i class="fas fa-calendar-check"></i> Solicitar reserva
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  navigateTo('profile');
+  if (!id) return;
+  window.location.href = `/perfiles/${id}/`;
   initBlobButtons();
 });
 
