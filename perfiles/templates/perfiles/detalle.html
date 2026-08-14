@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ perfil.nombre_completo }} | LuxArs Admin{% endblock %}
+{% block title %}{{ perfil.nombre_completo }} | LuxArs{% endblock %}
 {% block content %}
   <div class="crumb">
     <a href="{% url 'perfiles:lista' %}">Perfiles de Fotógrafos</a> / {{ perfil.nombre_completo }}
