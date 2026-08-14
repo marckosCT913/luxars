@@ -1334,11 +1334,11 @@ function updateNavbarUI() {
   const heroText = document.getElementById('heroText');
   if (!badge || !loginBtn) return;
 
-  // El nombre de la sesion solo se muestra en el panel del menu hamburguesa,
-  // nunca en la barra de navegacion superior.
-  badge.style.display = 'none';
   if (currentUser) {
+    badge.style.display = 'block';
     loginBtn.style.display = 'none';
+    document.getElementById('userAvatar').src = currentUser.avatar;
+    document.getElementById('userName').textContent = currentUser.name;
     if (panelLoginBtn) panelLoginBtn.style.display = 'none';
     if (panelUser) {
       panelUser.style.display = 'flex';
@@ -1348,6 +1348,7 @@ function updateNavbarUI() {
     if (panelLogoutBtn) panelLogoutBtn.style.display = 'flex';
     if (heroText) heroText.style.display = 'none';
   } else {
+    badge.style.display = 'none';
     loginBtn.style.display = 'inline-flex';
     if (panelLoginBtn) panelLoginBtn.style.display = 'flex';
     if (panelUser) panelUser.style.display = 'none';
