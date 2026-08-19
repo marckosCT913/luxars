@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LuxArs — Conecta con los mejores fotógrafos del Valle de Aburrá</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
@@ -62,6 +62,7 @@
             </button>
             <div class="user-dropdown" id="userDropdown">
               <a href="#" data-page="dashboard"><i class="fas fa-columns"></i> Dashboard</a>
+              <a href="#" data-page="myprofile" id="viewProfileLink"><i class="fas fa-user"></i> Ver perfil</a>
               <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
             </div>
           </div>
@@ -472,6 +473,36 @@
       <div class="container">
         <button class="btn btn-outline back-btn" id="backToCatalog"><i class="fas fa-arrow-left"></i> Volver al catálogo</button>
         <div id="profileContent"></div>
+      </div>
+    </section>
+
+    <!-- ===== MI PERFIL (estilo Instagram) ===== -->
+    <section class="page" id="page-myprofile">
+      <div class="container">
+        <div class="ig-header">
+          <img class="ig-avatar" id="igAvatar" src="" alt="Mi foto" />
+          <div class="ig-header-info">
+            <div class="ig-username-row">
+              <h1 class="ig-username" id="igUsername"></h1>
+              <span class="ig-role-badge" id="igRoleBadge"></span>
+            </div>
+            <div class="ig-stats">
+              <div class="ig-stat"><strong id="igStatsPosts">0</strong><span>Publicaciones</span></div>
+              <div class="ig-stat"><strong id="igStatsRating">—</strong><span>Valoración</span></div>
+              <div class="ig-stat"><strong id="igStatsServices">0</strong><span>Servicios</span></div>
+            </div>
+            <p class="ig-name" id="igName"></p>
+            <p class="ig-bio" id="igBio"></p>
+            <div class="ig-specialties" id="igSpecialties"></div>
+          </div>
+        </div>
+        <div class="ig-divider"></div>
+        <div class="ig-grid" id="igGrid"></div>
+        <div class="ig-empty" id="igEmpty" style="display:none;">
+          <i class="fas fa-camera-retro"></i>
+          <p>Aún no hay publicaciones.</p>
+          <p class="ig-empty-sub">Sube tu primera foto para mostrar tu trabajo.</p>
+        </div>
       </div>
     </section>
 

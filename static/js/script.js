@@ -367,6 +367,11 @@ function navigateTo(pageId, pushHistory) {
   const target = document.getElementById(`page-${pageId}`);
   if (target) target.classList.add('active');
 
+  if (pageId === 'myprofile') {
+    document.getElementById('userDropdown')?.classList.remove('open');
+    renderMyProfile();
+  }
+
   navLinks.forEach(l => l.classList.remove('active'));
   document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
 
@@ -1248,6 +1253,67 @@ function applyProfile(sessionUser, profile) {
     status.style.display = 'block';
     setTimeout(() => { status.style.display = 'none'; }, 4000);
   }
+}
+
+// ----- Mi Perfil (Instagram style) -----
+async function renderMyProfile() {
+  if (!currentUser) return;
+
+  const user = currentUser;
+  const demoPhotographer = APP_USERS.find(u => u.email === user.email);
+  const specialty = (user.specialty) || (demoPhotographer && photographers.find(p => p.name === demoPhotographer.name)?.specialty) || 'Fotografía';
+  const bio = (demoPhotographer && photographers.find(p => p.name === demoPhotographer.name)?.bio) || 'Fotógrafo/a apasionado/a por capturar momentos inolvidables en el Valle de Aburrá.';
+  const services = ['Fotografía', 'Edición', 'Entrega digital'];
+
+  document.getElementById('igAvatar').src = user.avatar;
+  document.getElementById('igUsername').textContent = user.name;
+  const roleBadge = document.getElementById('igRoleBadge');
+  roleBadge.textContent = user.role === 'photographer' ? 'Fotógrafo' : user.role === 'admin' ? 'Admin' : 'Cliente';
+  document.getElementById('igName').textContent = user.name;
+  document.getElementById('igBio').textContent = bio;
+
+  const specialtiesBox = document.getElementById('igSpecialties');
+  specialtiesBox.innerHTML = `<span><i class="fas fa-camera"></i> ${specialty}</span>` + services.slice(0, 2).map(s => `<span>${s}</span>`).join('');
+
+  const grid = document.getElementById('igGrid');
+  const empty = document.getElementById('igEmpty');
+  grid.innerHTML = '';
+  empty.style.display = 'none';
+
+  let items = [];
+  if (supabaseClient) {
+    const { data } = await supabaseClient
+      .from('portfolio_items')
+      .select('id, title, type, file_url, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    items = data || [];
+  }
+
+  if (!items.length && demoPhotographer && demoPhotographer.role === 'photographer') {
+    const ph = photographers.find(p => p.name === demoPhotographer.name);
+    if (ph) items = ph.portfolio.map(url => ({ title: ph.specialty, type: 'imagen', file_url: url }));
+  }
+
+  document.getElementById('igStatsPosts').textContent = items.length;
+  const rating = demoPhotographer && photographers.find(p => p.name === demoPhotographer.name)?.rating;
+  document.getElementById('igStatsRating').textContent = rating ? rating.toFixed(1) : '—';
+  document.getElementById('igStatsServices').textContent = services.length;
+
+  if (!items.length) {
+    empty.style.display = 'block';
+    return;
+  }
+
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'ig-item';
+    const media = item.type === 'video'
+      ? `<video src="${item.file_url}" muted playsinline preload="metadata"></video>`
+      : `<img src="${item.file_url}" alt="${item.title}" loading="lazy" />`;
+    el.innerHTML = `${media}<div class="ig-item-overlay"><span><i class="fas fa-heart"></i> ${(i * 7 + 23) % 99 + 1}</span><span><i class="fas fa-comment"></i> ${(i * 3 + 5) % 40 + 1}</span></div>`;
+    grid.appendChild(el);
+  });
 }
 
 async function restoreSession() {
