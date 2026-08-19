@@ -480,11 +480,15 @@
     <section class="page" id="page-myprofile">
       <div class="container">
         <div class="ig-header">
-          <img class="ig-avatar" id="igAvatar" src="" alt="Mi foto" />
+          <div class="ig-avatar-wrap">
+            <img class="ig-avatar" id="igAvatar" src="" alt="Mi foto" />
+            <button class="ig-avatar-edit" id="igAvatarEdit" title="Cambiar foto de perfil"><i class="fas fa-camera"></i></button>
+          </div>
           <div class="ig-header-info">
             <div class="ig-username-row">
               <h1 class="ig-username" id="igUsername"></h1>
               <span class="ig-role-badge" id="igRoleBadge"></span>
+              <button class="btn btn-outline ig-edit-btn" id="igEditProfileBtn"><i class="fas fa-pen"></i> Editar perfil</button>
             </div>
             <div class="ig-stats">
               <div class="ig-stat"><strong id="igStatsPosts">0</strong><span>Publicaciones</span></div>
@@ -496,6 +500,7 @@
             <div class="ig-specialties" id="igSpecialties"></div>
           </div>
         </div>
+        <div class="ig-highlights" id="igHighlights"></div>
         <div class="ig-divider"></div>
         <div class="ig-grid" id="igGrid"></div>
         <div class="ig-empty" id="igEmpty" style="display:none;">
@@ -503,8 +508,69 @@
           <p>Aún no hay publicaciones.</p>
           <p class="ig-empty-sub">Sube tu primera foto para mostrar tu trabajo.</p>
         </div>
+
+        <input type="file" id="igAvatarInput" accept="image/*" style="display:none;" />
       </div>
     </section>
+
+    <!-- Editar perfil (estilo Instagram) -->
+    <div id="igEditModal" class="upload-modal-overlay" style="display:none;">
+      <div class="upload-modal-card">
+        <div class="upload-modal-header">
+          <div>
+            <h3><i class="fas fa-pen"></i> Editar perfil</h3>
+            <p>Actualiza tu información pública</p>
+          </div>
+          <button class="upload-modal-close" id="igEditClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="upload-modal-body">
+          <div class="upload-field">
+            <label>Foto de perfil</label>
+            <div class="ig-edit-avatar-row">
+              <img class="ig-edit-avatar-preview" id="igEditAvatarPreview" src="" alt="Avatar" />
+              <button class="btn btn-outline" id="igEditAvatarPick"><i class="fas fa-camera"></i> Cambiar foto</button>
+            </div>
+          </div>
+          <div class="upload-field">
+            <label>Nombre</label>
+            <input type="text" id="igEditName" placeholder="Tu nombre" />
+          </div>
+          <div class="upload-field">
+            <label>Bio</label>
+            <textarea id="igEditBio" rows="3" placeholder="Cuéntanos sobre ti"></textarea>
+          </div>
+          <div class="upload-field">
+            <label>Especialidad</label>
+            <input type="text" id="igEditSpecialty" placeholder="Ej: Fotografía de bodas" />
+          </div>
+        </div>
+        <div class="upload-modal-footer">
+          <button class="btn btn-outline" id="igEditCancel">Cancelar</button>
+          <button class="btn btn-primary" id="igEditSave"><i class="fas fa-check"></i> Guardar cambios</button>
+        </div>
+        <div id="igEditFeedback" class="upload-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Lightbox de publicación -->
+    <div id="igLightbox" class="upload-modal-overlay" style="display:none;">
+      <div class="ig-lightbox-card">
+        <button class="upload-modal-close" id="igLightboxClose"><i class="fas fa-times"></i></button>
+        <div class="ig-lightbox-media" id="igLightboxMedia"></div>
+        <div class="ig-lightbox-info">
+          <div class="ig-lightbox-user">
+            <img id="igLightboxAvatar" src="" alt="Avatar" />
+            <strong id="igLightboxUser"></strong>
+          </div>
+          <div class="ig-lightbox-stats">
+            <span><i class="fas fa-heart"></i> <span id="igLightboxLikes">0</span></span>
+            <span><i class="fas fa-comment"></i> <span id="igLightboxComments">0</span></span>
+          </div>
+          <p class="ig-lightbox-title" id="igLightboxTitle"></p>
+          <p class="ig-lightbox-desc" id="igLightboxDesc"></p>
+        </div>
+      </div>
+    </div>
 
     <!-- ===== DASHBOARD ===== -->
     <section class="page" id="page-dashboard">

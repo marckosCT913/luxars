@@ -259,6 +259,20 @@ const photographers = [
     ],
     bio: "Fotografía de bodas de lujo. Cobertura completa con equipo profesional y dron.",
     location: "Sabaneta", experience: "15 años", deliveries: "14-21 días hábiles"
+  },
+  {
+    id: 17, name: "Fotógrafo Test", specialty: "Retratos", rating: 4.8, price: 200,
+    avatar: "https://i.pravatar.cc/300?img=55",
+    portfolio: [
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=500&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=400&fit=crop"
+    ],
+    bio: "Fotógrafo/a apasionado/a por capturar momentos inolvidables en el Valle de Aburrá.",
+    location: "Medellín", experience: "5 años", deliveries: "3-5 días hábiles"
   }
 ];
 
@@ -1261,11 +1275,15 @@ async function renderMyProfile() {
 
   const user = currentUser;
   const demoPhotographer = APP_USERS.find(u => u.email === user.email);
-  const specialty = (user.specialty) || (demoPhotographer && photographers.find(p => p.name === demoPhotographer.name)?.specialty) || 'Fotografía';
-  const bio = (demoPhotographer && photographers.find(p => p.name === demoPhotographer.name)?.bio) || 'Fotógrafo/a apasionado/a por capturar momentos inolvidables en el Valle de Aburrá.';
-  const services = ['Fotografía', 'Edición', 'Entrega digital'];
+  const ph = demoPhotographer && photographers.find(p => p.name === demoPhotographer.name);
+  const specialty = (user.specialty) || (user.role === 'photographer' && ph?.specialty) || (user.role === 'photographer' ? 'Fotografía' : 'LuxArs');
+  const bio = (user.bio) || (user.role === 'photographer' && ph?.bio) ||
+    (user.role === 'photographer'
+      ? 'Fotógrafo/a apasionado/a por capturar momentos inolvidables en el Valle de Aburrá.'
+      : 'Miembro de LuxArs. Explora fotógrafos, reserva sesiones y descubre el arte visual del Valle de Aburrá.');
+  const services = user.role === 'photographer' ? ['Fotografía', 'Edición', 'Entrega digital'] : ['Reservas', 'Cotizaciones', 'Soporte'];
 
-  document.getElementById('igAvatar').src = user.avatar;
+  document.getElementById('igAvatar').src = user.avatar || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(user.email);
   document.getElementById('igUsername').textContent = user.name;
   const roleBadge = document.getElementById('igRoleBadge');
   roleBadge.textContent = user.role === 'photographer' ? 'Fotógrafo' : user.role === 'admin' ? 'Admin' : 'Cliente';
@@ -1284,7 +1302,7 @@ async function renderMyProfile() {
   if (supabaseClient) {
     const { data } = await supabaseClient
       .from('portfolio_items')
-      .select('id, title, type, file_url, created_at')
+      .select('id, title, description, type, file_url, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
     items = data || [];
@@ -1300,6 +1318,8 @@ async function renderMyProfile() {
   document.getElementById('igStatsRating').textContent = rating ? rating.toFixed(1) : '—';
   document.getElementById('igStatsServices').textContent = services.length;
 
+  renderHighlights(items);
+
   if (!items.length) {
     empty.style.display = 'block';
     return;
@@ -1308,12 +1328,184 @@ async function renderMyProfile() {
   items.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'ig-item';
+    el.dataset.index = i;
     const media = item.type === 'video'
       ? `<video src="${item.file_url}" muted playsinline preload="metadata"></video>`
       : `<img src="${item.file_url}" alt="${item.title}" loading="lazy" />`;
     el.innerHTML = `${media}<div class="ig-item-overlay"><span><i class="fas fa-heart"></i> ${(i * 7 + 23) % 99 + 1}</span><span><i class="fas fa-comment"></i> ${(i * 3 + 5) % 40 + 1}</span></div>`;
+    el.addEventListener('click', () => openIgLightbox(items, i));
     grid.appendChild(el);
   });
+}
+
+function renderHighlights(items) {
+  const box = document.getElementById('igHighlights');
+  box.innerHTML = '';
+  const addBtn = document.createElement('button');
+  addBtn.className = 'ig-highlight ig-highlight-add';
+  addBtn.innerHTML = `<div class="ig-highlight-ring"><i class="fas fa-plus"></i></div><span>Nuevo</span>`;
+  addBtn.addEventListener('click', () => {
+    if (!currentUser) return;
+    document.getElementById('uploadModalOverlay').style.display = 'flex';
+  });
+  box.appendChild(addBtn);
+
+  const first = items.slice(0, 4);
+  first.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ig-highlight';
+    const title = (item.title || 'Publicación ' + (i + 1)).substring(0, 10);
+    btn.innerHTML = `<div class="ig-highlight-ring"><img src="${item.file_url}" alt="${title}" /></div><span>${title}</span>`;
+    btn.addEventListener('click', () => openIgLightbox(items, i));
+    box.appendChild(btn);
+  });
+}
+
+function openIgLightbox(items, index) {
+  const item = items[index];
+  if (!item) return;
+  const overlay = document.getElementById('igLightbox');
+  const media = document.getElementById('igLightboxMedia');
+  media.innerHTML = item.type === 'video'
+    ? `<video src="${item.file_url}" controls playsinline></video>`
+    : `<img src="${item.file_url}" alt="${item.title || ''}" />`;
+  document.getElementById('igLightboxAvatar').src = currentUser.avatar;
+  document.getElementById('igLightboxUser').textContent = currentUser.name;
+  document.getElementById('igLightboxLikes').textContent = (index * 7 + 23) % 99 + 1;
+  document.getElementById('igLightboxComments').textContent = (index * 3 + 5) % 40 + 1;
+  document.getElementById('igLightboxTitle').textContent = item.title || 'Sin título';
+  document.getElementById('igLightboxDesc').textContent = item.description || 'Subido por ' + currentUser.name;
+  overlay.style.display = 'flex';
+}
+
+function closeIgLightbox() {
+  document.getElementById('igLightbox').style.display = 'none';
+  document.getElementById('igLightboxMedia').innerHTML = '';
+}
+
+function openIgEditModal() {
+  if (!currentUser) return;
+  const demoPhotographer = APP_USERS.find(u => u.email === currentUser.email);
+  const ph = demoPhotographer && photographers.find(p => p.name === demoPhotographer.name);
+  const specialty = (currentUser.specialty) || (currentUser.role === 'photographer' && ph?.specialty) || (currentUser.role === 'photographer' ? 'Fotografía' : 'LuxArs');
+  const bio = (currentUser.bio) || (currentUser.role === 'photographer' && ph?.bio) ||
+    (currentUser.role === 'photographer'
+      ? 'Fotógrafo/a apasionado/a por capturar momentos inolvidables en el Valle de Aburrá.'
+      : 'Miembro de LuxArs. Explora fotógrafos, reserva sesiones y descubre el arte visual del Valle de Aburrá.');
+  document.getElementById('igEditAvatarPreview').src = currentUser.avatar || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(currentUser.email);
+  document.getElementById('igEditName').value = currentUser.name;
+  document.getElementById('igEditBio').value = bio;
+  document.getElementById('igEditSpecialty').value = specialty;
+  document.getElementById('igEditFeedback').style.display = 'none';
+  document.getElementById('igEditModal').style.display = 'flex';
+}
+
+function closeIgEditModal() {
+  document.getElementById('igEditModal').style.display = 'none';
+}
+
+async function saveIgProfile() {
+  if (!currentUser) return;
+  const name = document.getElementById('igEditName').value.trim();
+  const bio = document.getElementById('igEditBio').value.trim();
+  const specialty = document.getElementById('igEditSpecialty').value.trim();
+  const feedback = document.getElementById('igEditFeedback');
+
+  if (!name) {
+    feedback.textContent = '⚠️ El nombre es obligatorio.';
+    feedback.className = 'upload-feedback error';
+    feedback.style.display = 'block';
+    return;
+  }
+
+  currentUser.name = name;
+  currentUser.bio = bio;
+  currentUser.specialty = specialty;
+
+  // Modo demo: guarda en localStorage
+  if (!supabaseClient) {
+    const demoUser = APP_USERS.find(u => u.email === currentUser.email);
+    if (demoUser) {
+      demoUser.name = name;
+    }
+    const session = localStorage.getItem('luxars_session');
+    if (session) {
+      try {
+        const saved = JSON.parse(session);
+        saved.name = name;
+        saved.bio = bio;
+        saved.specialty = specialty;
+        localStorage.setItem('luxars_session', JSON.stringify(saved));
+      } catch { /* ignore */ }
+    }
+  } else {
+    // Modo Supabase: actualiza nombre en profiles
+    const { error } = await supabaseClient.from('profiles').update({ name }).eq('id', currentUser.id);
+    if (error) {
+      feedback.textContent = '⚠️ No se pudo guardar: ' + error.message;
+      feedback.className = 'upload-feedback error';
+      feedback.style.display = 'block';
+      return;
+    }
+  }
+
+  updateNavbarUI();
+  renderMyProfile();
+  closeIgEditModal();
+}
+
+function handleIgAvatar(file) {
+  if (!currentUser || !file) return;
+  const feedback = document.getElementById('igEditFeedback');
+  const done = url => {
+    currentUser.avatar = url;
+    updateNavbarUI();
+    document.getElementById('igAvatar').src = url;
+    document.getElementById('igEditAvatarPreview').src = url;
+  };
+
+  // Modo demo: dataURL
+  if (!supabaseClient) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      done(e.target.result);
+      const session = localStorage.getItem('luxars_session');
+      if (session) {
+        try {
+          const saved = JSON.parse(session);
+          saved.avatar = e.target.result;
+          localStorage.setItem('luxars_session', JSON.stringify(saved));
+        } catch { /* ignore */ }
+      }
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  // Modo Supabase: sube avatar a Storage
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const filePath = `avatars/${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  feedback.textContent = 'Subiendo foto...';
+  feedback.className = 'upload-feedback';
+  feedback.style.display = 'block';
+
+  supabaseClient.storage.from('portfolios').upload(filePath, file, { cacheControl: '3600', upsert: true })
+    .then(async ({ error }) => {
+      if (error) throw error;
+      const { data } = supabaseClient.storage.from('portfolios').getPublicUrl(filePath);
+      const url = data.publicUrl;
+      const { error: dbError } = await supabaseClient.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+      if (dbError) throw dbError;
+      done(url);
+      feedback.textContent = '✅ Foto de perfil actualizada.';
+      feedback.className = 'upload-feedback success';
+      setTimeout(() => { feedback.style.display = 'none'; }, 2000);
+    })
+    .catch(err => {
+      feedback.textContent = '⚠️ Error al subir la foto: ' + err.message;
+      feedback.className = 'upload-feedback error';
+      feedback.style.display = 'block';
+    });
 }
 
 async function restoreSession() {
@@ -1326,6 +1518,10 @@ async function restoreSession() {
         const valid = APP_USERS.find(u => u.email === user.email);
         if (valid) {
           currentUser = valid;
+          if (user.avatar) currentUser.avatar = user.avatar;
+          if (user.name) currentUser.name = user.name;
+          if (user.bio) currentUser.bio = user.bio;
+          if (user.specialty) currentUser.specialty = user.specialty;
           updateNavbarUI();
         } else {
           localStorage.removeItem('luxars_session');
@@ -1377,12 +1573,13 @@ function updateNavbarUI() {
   if (currentUser) {
     badge.style.display = 'block';
     loginBtn.style.display = 'none';
-    document.getElementById('userAvatar').src = currentUser.avatar;
+    const avatarUrl = currentUser.avatar || 'https://i.pravatar.cc/100?u=' + encodeURIComponent(currentUser.email || 'user');
+    document.getElementById('userAvatar').src = avatarUrl;
     document.getElementById('userName').textContent = currentUser.name;
     if (panelLoginBtn) panelLoginBtn.style.display = 'none';
     if (panelUser) {
       panelUser.style.display = 'flex';
-      document.getElementById('panelAvatar').src = currentUser.avatar;
+      document.getElementById('panelAvatar').src = avatarUrl;
       document.getElementById('panelName').textContent = currentUser.name;
     }
     if (panelLogoutBtn) panelLogoutBtn.style.display = 'flex';
@@ -1736,8 +1933,59 @@ initBlobButtons();
 initBookingSystem();
 initCustomPickers();
 initUploadSystem();
+initIgProfile();
 loadPortfolio();
 animateCounters();
+
+function initIgProfile() {
+  const editBtn = document.getElementById('igEditProfileBtn');
+  if (editBtn) editBtn.addEventListener('click', openIgEditModal);
+
+  const closeBtn = document.getElementById('igEditClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeIgEditModal);
+  const cancelBtn = document.getElementById('igEditCancel');
+  if (cancelBtn) cancelBtn.addEventListener('click', closeIgEditModal);
+  const editModal = document.getElementById('igEditModal');
+  if (editModal) editModal.addEventListener('click', function (e) {
+    if (e.target === this) closeIgEditModal();
+  });
+
+  const saveBtn = document.getElementById('igEditSave');
+  if (saveBtn) saveBtn.addEventListener('click', saveIgProfile);
+
+  const avatarEdit = document.getElementById('igAvatarEdit');
+  const avatarInput = document.getElementById('igAvatarInput');
+  if (avatarEdit && avatarInput) {
+    avatarEdit.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', function () {
+      if (this.files[0]) {
+        if (document.getElementById('igEditModal').style.display === 'flex') {
+          handleIgAvatar(this.files[0]);
+        } else {
+          handleIgAvatar(this.files[0]);
+        }
+      }
+      this.value = '';
+    });
+  }
+
+  const pickBtn = document.getElementById('igEditAvatarPick');
+  if (pickBtn) pickBtn.addEventListener('click', () => avatarInput.click());
+
+  const lightboxClose = document.getElementById('igLightboxClose');
+  if (lightboxClose) lightboxClose.addEventListener('click', closeIgLightbox);
+  const lightbox = document.getElementById('igLightbox');
+  if (lightbox) lightbox.addEventListener('click', function (e) {
+    if (e.target === this) closeIgLightbox();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeIgEditModal();
+      closeIgLightbox();
+    }
+  });
+}
 
 // ----- Back to Top -----
 const backToTop = document.getElementById('backToTop');
